@@ -1,0 +1,109 @@
+// Each level: a title, a one-line hint, and the grid itself.
+// The edge of the grid is the edge of the world. Walls are only walls
+// while some sentence says `stop=#` — and anything that touches the end
+// of a sentence becomes part of it.
+export const LEVELS = [
+  {
+    title: 'hello, world',
+    hint: 'arrows or wasd to move · z undo · r restart',
+    map: [
+      '             ',
+      '  @       $  ',
+      '             ',
+      'you=@   win=$',
+    ],
+  },
+  {
+    title: 'fill in the blank',
+    hint: 'a rule is just text. text can be pushed.',
+    map: [
+      '         ',
+      ' win=  $ ',
+      '         ',
+      '  @    $ ',
+      'you=@    ',
+    ],
+  },
+  {
+    title: 'breakout',
+    hint: 'walls are only walls because a sentence says so.',
+    map: [
+      '#########         ',
+      '#       #         ',
+      '# @     #     $   ',
+      '#       #         ',
+      '# stop=##         ',
+      '#       #         ',
+      '#########         ',
+      '                  ',
+      ' you=@       win=$',
+    ],
+  },
+  {
+    title: 'glue',
+    hint: 'whatever touches the end of a sentence joins it.',
+    map: [
+      '             ',
+      '  win=  $ ## ',
+      '         #  #',
+      '   @     #  #',
+      '          ## ',
+      'you=@  stop=#',
+    ],
+  },
+  {
+    title: 'plural',
+    hint: '',
+    map: [
+      '        #######',
+      '  @     #  $  #',
+      '        #  x  #',
+      '        #######',
+      ' you=@    x    ',
+      '               ',
+      'stop=#   win=$ ',
+    ],
+  },
+  {
+    title: 'the river',
+    hint: '',
+    map: [
+      '         ~      ',
+      '   @     ~   $  ',
+      '         ~      ',
+      ' you=@   ~      ',
+      '         ~      ',
+      'kill=~   ~ win=$',
+    ],
+  },
+  {
+    title: 'martyr',
+    hint: 'sometimes you have to become the word.',
+    map: [
+      '   #########   ',
+      '   #       #   ',
+      '   #   @   #   ',
+      '   #       #   ',
+      '   #########   ',
+      '               ',
+      '  @      win=  ',
+      '               ',
+      'you=@   stop=# ',
+    ],
+  },
+  {
+    title: 'identity',
+    hint: '',
+    map: [
+      '################',
+      '#       #      #',
+      '# @     #   $  #',
+      '#       #      #',
+      '# you=@ #      #',
+      '#       #      #',
+      '################',
+      '                ',
+      'stop=#     win=$',
+    ],
+  },
+];

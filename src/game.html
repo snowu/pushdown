@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pushdown</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='3' y='3' width='26' height='26' rx='4' fill='%23d9ae6c'/><text x='16' y='23' font-size='20' text-anchor='middle' font-family='Georgia' font-weight='bold' fill='%23b7361f'>@</text></svg>">
+<style>
+/*__FONTS__*/
+:root {
+  --paper: #ece2cc; --paper-2: #e2d6bb; --ink: #221e1a; --ink-soft: #5d5346;
+  --iron: #24211e; --iron-2: #1a1816; --steel: #4b4741;
+  --you: #a86700; --win: #1f7f55; --stop: #2f48a8; --kill: #c7341f;
+  --brass-hi: #f6dd8e; --brass: #d3a441; --brass-lo: #8e6620;
+  --wood-hi: #efd3a0; --wood: #ddb479; --wood-lo: #a97a45;
+  --serif: 'Alfa Slab One', 'Rockwell', 'Georgia', serif;
+  --mono: 'Courier Prime', 'Courier New', monospace;
+  --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .15 0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100vh; color: var(--ink); font-family: var(--mono);
+  background: var(--noise), radial-gradient(ellipse at 50% 30%, var(--paper) 40%, var(--paper-2));
+  background-color: var(--paper);
+  display: flex; flex-direction: column; align-items: center; padding: 28px 16px 40px; gap: 22px;
+}
+button { font: inherit; color: inherit; }
+
+/* ---------- masthead ---------- */
+header { width: min(1040px, 100%); display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap;
+  border-bottom: 3px double var(--ink); padding-bottom: 12px; }
+.mast { font-family: var(--serif); font-size: clamp(34px, 6vw, 54px); line-height: .9; letter-spacing: 1px;
+  text-shadow: 0 1px 0 #fff8, 0 -1px 0 #0002; }
+.mast em { font-style: normal; color: var(--kill); }
+.tag { font-style: italic; color: var(--ink-soft); font-size: 14px; padding-bottom: 4px; }
+.tag b { font-style: normal; }
+.drawer { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 2px; }
+.drawer button {
+  width: 34px; height: 34px; border: 0; border-radius: 3px; cursor: pointer; font-family: var(--serif); font-size: 15px;
+  background: linear-gradient(160deg, var(--wood-hi), var(--wood) 55%, var(--wood-lo));
+  box-shadow: inset 0 1px 0 #fff6, inset 0 -2px 0 #0003, 0 2px 0 #6d4d2a, 0 3px 5px #0003; color: var(--ink);
+  transition: transform .1s;
+}
+.drawer button:hover { transform: translateY(-2px); }
+.drawer button.done { color: var(--win); }
+.drawer button.cur { background: linear-gradient(160deg, var(--brass-hi), var(--brass) 55%, var(--brass-lo)); box-shadow: inset 0 1px 0 #fff9, inset 0 -2px 0 #0003, 0 2px 0 #6b4c14, 0 0 0 2px var(--ink); }
+.drawer button.wide { width: auto; padding: 0 10px; font-family: var(--mono); font-weight: 700; font-size: 13px; }
+
+/* ---------- layout ---------- */
+main { width: min(1040px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 26px; align-items: start; }
+@media (max-width: 820px) { main { grid-template-columns: minmax(0, 1fr); } }
+
+.plate { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.caption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.caption h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 24px; }
+.caption h2 small { font-family: var(--mono); font-size: 14px; color: var(--ink-soft); margin-right: 6px; }
+.counter { font-size: 14px; color: var(--ink-soft); }
+.counter b { color: var(--ink); }
+.hint { margin: -6px 0 0; font-style: italic; color: var(--ink-soft); font-size: 14px; min-height: 1.2em; }
+
+/* ---------- the press bed ---------- */
+.bed {
+  position: relative; border-radius: 10px; padding: 26px;
+  background: var(--noise), radial-gradient(ellipse at 40% 20%, #34302b, var(--iron) 60%, var(--iron-2));
+  box-shadow: 0 0 0 6px var(--steel), 0 0 0 7px #0006, 0 18px 40px -10px #0008, inset 0 2px 14px #000a;
+  display: flex; justify-content: center; overflow: hidden; min-height: 240px;
+}
+.bed::before, .bed::after { /* screws */
+  content: ''; position: absolute; width: 10px; height: 10px; border-radius: 50%; top: 9px; left: 9px;
+  background: radial-gradient(circle at 35% 35%, #9a948a, #4a4640); box-shadow: 0 1px 1px #000a;
+}
+.bed::after { left: auto; right: 9px; }
+.board { position: relative; touch-action: none; }
+.board.shake { animation: shake .16s; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(3px); } }
+.slot { position: absolute; border-radius: 3px; background: #0000; box-shadow: inset 0 0 0 1px #ffffff07; }
+
+/* composing stick: the brass tray a live sentence sits in */
+.stick {
+  position: absolute; border-radius: 5px; z-index: 1;
+  background: linear-gradient(180deg, var(--brass-hi), var(--brass) 40%, var(--brass-lo));
+  box-shadow: 0 3px 0 #5a3f10, 0 6px 12px #0009, inset 0 1px 0 #fffa;
+  transition: left .11s ease-out, top .11s ease-out, width .11s ease-out;
+}
+.stick::after { /* key label engraved on the tray */
+  content: attr(data-key); position: absolute; left: 8px; bottom: 0; font-size: 8px; line-height: 9px; letter-spacing: 2px;
+  color: #5a3f10; text-transform: uppercase; font-weight: 700; opacity: .8;
+}
+.stick.fresh { animation: shine .7s ease-out; }
+@keyframes shine { 0% { filter: brightness(1.8) saturate(1.4); } 100% { filter: none; } }
+
+/* ---------- type blocks ---------- */
+.blk {
+  position: absolute; left: 0; top: 0; z-index: 2; border-radius: 4px;
+  display: grid; place-items: center; font-family: var(--serif); line-height: 1;
+  transition: transform .11s ease-out, opacity .25s, filter .25s;
+  background:
+    repeating-linear-gradient(97deg, #0000 0 5px, #8a5a2a12 5px 6px, #0000 6px 11px),
+    linear-gradient(155deg, var(--wood-hi), var(--wood) 55%, var(--wood-lo));
+  box-shadow: inset 0 1px 0 #fff7, inset 0 -3px 0 #0002, inset -2px 0 0 #0001, 0 3px 0 #6b4a25, 0 5px 9px #0008;
+  color: #3a332b;
+}
+.blk > span { display: block; transform-origin: 50% 80%; }
+.blk.gone { opacity: 0; filter: blur(2px); }
+/* text inside a live sentence: inked by what it means */
+.blk.t { box-shadow: inset 0 1px 0 #fff8, inset 0 -3px 0 #0002, 0 2px 0 #6b4a25, 0 3px 4px #0006; }
+.blk.t-you  { color: var(--you); }
+.blk.t-win  { color: var(--win); }
+.blk.t-stop { color: var(--stop); }
+.blk.t-kill { color: var(--kill); }
+.blk.t > span { text-shadow: 0 1px 0 #fff5; }
+/* loose objects get their material from the laws */
+.blk.inert { color: #6f6253; filter: saturate(.6) brightness(.93); }
+.blk.o-stop {
+  background: repeating-linear-gradient(0deg, #0000 0 3px, #ffffff08 3px 4px), linear-gradient(155deg, #a4a9ae, #767c83 55%, #4d5258);
+  box-shadow: inset 0 1px 0 #fff6, inset 0 -3px 0 #0003, 0 3px 0 #2b2e31, 0 5px 9px #0009; color: #26292d;
+}
+.blk.o-win {
+  background: linear-gradient(155deg, #d8f1dd, #9fd4ae 55%, #5f9e74);
+  box-shadow: inset 0 1px 0 #fff9, 0 3px 0 #2e5a3c, 0 0 18px 2px #5fe0967a; color: #0f4d31;
+}
+.blk.o-win > span { animation: breathe 2.2s ease-in-out infinite; }
+.blk.o-kill {
+  background: linear-gradient(155deg, #ef8d7c, #c7341f 55%, #7d1b0e);
+  box-shadow: inset 0 1px 0 #fff6, 0 3px 0 #4f1108, 0 0 14px #ff4a2a66; color: #2b0703;
+}
+.blk.o-kill > span { animation: shiver .35s steps(2) infinite; }
+.blk.o-you {
+  z-index: 3;
+  background: linear-gradient(155deg, var(--brass-hi), var(--brass) 50%, var(--brass-lo));
+  box-shadow: inset 0 1px 0 #fffc, inset 0 -3px 0 #0003, 0 3px 0 #5a3f10, 0 0 0 2px #fff3, 0 0 22px 3px #ffc84d88; color: #3d2a05;
+}
+.blk.o-you > span { animation: bob 1.6s ease-in-out infinite; }
+.blk.o-you.o-win { box-shadow: inset 0 1px 0 #fffc, 0 3px 0 #5a3f10, 0 0 26px 6px #5fe096aa; }
+@keyframes bob { 50% { transform: translateY(-6%); } }
+@keyframes breathe { 50% { transform: scale(1.08); } }
+@keyframes shiver { 0% { transform: translate(-1px, 0) rotate(-2deg); } 100% { transform: translate(1px, 0) rotate(2deg); } }
+
+/* ---------- proof sheet (win) & slip (lose) ---------- */
+.veil { position: fixed; inset: 0; z-index: 9; background: #1a151066; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.veil.show { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed; left: 50%; top: 9vh; width: min(620px, calc(100vw - 32px)); max-height: 82vh; overflow: auto;
+  margin-left: calc(min(620px, calc(100vw - 32px)) / -2);
+  z-index: 10; border-radius: 2px; display: flex; flex-direction: column;
+  align-items: center; gap: 14px; padding: 30px 26px 28px; text-align: center;
+  background: var(--noise), linear-gradient(170deg, #f6efdf, #e9dec5);
+  box-shadow: 0 24px 60px #000b; transform: translateY(-130vh) rotate(-3deg); transition: transform .45s cubic-bezier(.2,.9,.25,1.1);
+  pointer-events: none;
+}
+.sheet.show { transform: translateY(0) rotate(-.6deg); pointer-events: auto; }
+.sheet .stamp { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--ink-soft); }
+.sheet h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1; color: var(--kill); }
+.sheet.dead h3 { color: var(--ink); }
+.sheet p { margin: 0; font-size: 15px; max-width: 34em; }
+.print { font-family: var(--serif); line-height: 1; filter: url(#ink); opacity: .9; margin: 6px 0; display: grid; padding: 14px; border: 1px solid #0002; }
+.print:empty { display: none; }
+.print span { display: grid; place-items: center; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  border: 2px solid var(--ink); background: transparent; padding: 7px 16px; cursor: pointer; font-weight: 700; font-size: 14px;
+  border-radius: 2px; box-shadow: 3px 3px 0 var(--ink); transition: transform .08s, box-shadow .08s;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+
+/* ---------- side column: printed matter ---------- */
+aside { display: flex; flex-direction: column; gap: 18px; }
+.card { background: var(--noise), #f4ecda; padding: 16px 18px; box-shadow: 0 1px 0 #fff8 inset, 0 8px 18px -8px #5a4a3066, 0 0 0 1px #0000000d; transform: rotate(.3deg); }
+.card:nth-child(2) { transform: rotate(-.4deg); }
+.card h4 { margin: 0 0 10px; font-family: var(--serif); font-weight: 400; font-size: 15px; letter-spacing: 1px; border-bottom: 1px solid var(--ink); padding-bottom: 6px; }
+.laws { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+.laws li { display: flex; gap: 10px; align-items: center; }
+.laws .g { font-family: var(--serif); display: inline-flex; gap: 3px; }
+.laws .g i { font-style: normal; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 3px; font-size: 14px;
+  background: linear-gradient(155deg, var(--wood-hi), var(--wood)); box-shadow: 0 2px 0 #6b4a25; }
+.laws .none { font-style: italic; color: var(--ink-soft); }
+.k-you { color: var(--you); } .k-win { color: var(--win); } .k-stop { color: var(--stop); } .k-kill { color: var(--kill); }
+.small { font-size: 13.5px; line-height: 1.55; margin: 0; }
+.small code { font-weight: 700; }
+.keys { font-size: 13px; line-height: 2; }
+kbd { font: inherit; font-weight: 700; border: 1.5px solid var(--ink); border-radius: 3px; padding: 0 5px; box-shadow: 1px 1px 0 var(--ink); background: #fff6; }
+
+/* ---------- editor ---------- */
+.editor { display: none; flex-direction: column; gap: 10px; }
+.editor.show { display: flex; }
+.editor textarea {
+  width: 100%; min-height: 230px; resize: vertical; padding: 14px 16px; font: inherit; font-size: 17px; line-height: 1.3;
+  background: var(--noise), repeating-linear-gradient(180deg, #0000 0 21px, #7aa0c822 21px 22px), #f7f1e3; color: var(--ink);
+  border: 0; box-shadow: 0 0 0 1px #0002, 0 8px 18px -8px #5a4a3066; outline: none;
+}
+.editor .out { font-size: 14px; white-space: pre-wrap; min-height: 1.3em; word-break: break-all; }
+.editor .row { justify-content: flex-start; }
+
+.pad { display: none; grid-template-columns: repeat(3, 58px); gap: 8px; justify-content: center; }
+.pad button { height: 48px; border: 2px solid var(--ink); background: #f4ecda; box-shadow: 3px 3px 0 var(--ink); font-size: 18px; font-weight: 700; }
+@media (pointer: coarse) { .pad { display: grid; } }
+footer { font-size: 12.5px; color: var(--ink-soft); font-style: italic; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="ink"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="2.4"/></filter>
+</svg>
+
+<header>
+  <div class="mast">push<em>down</em></div>
+  <div class="tag">a typesetting puzzle. <b>the level is the program.</b></div>
+  <nav class="drawer" id="drawer"></nav>
+</header>
+
+<main>
+  <section class="plate">
+    <div class="caption">
+      <h2 id="title"></h2>
+      <div class="counter" id="counter"></div>
+    </div>
+    <p class="hint" id="hint"></p>
+    <div class="bed" id="bed">
+      <div class="board" id="board"></div>
+    </div>
+    <div class="veil" id="veil"></div>
+    <div class="sheet" id="sheet">
+      <div class="stamp" id="stamp"></div>
+      <h3 id="sheetTitle"></h3>
+      <div class="print" id="print"></div>
+      <p id="sheetText"></p>
+      <div class="row" id="sheetButtons"></div>
+    </div>
+    <div class="pad" id="pad">
+      <span></span><button data-d="up">↑</button><span></span>
+      <button data-d="left">←</button><button data-d="down">↓</button><button data-d="right">→</button>
+      <button data-k="z">undo</button><span></span><button data-k="r">reset</button>
+    </div>
+    <div class="editor" id="editor">
+      <textarea id="src" spellcheck="false" aria-label="level source"></textarea>
+      <div class="row">
+        <button class="btn primary" id="play">set it in type</button>
+        <button class="btn" id="solveBtn">ask the solver</button>
+        <button class="btn" id="copy">copy share link</button>
+      </div>
+      <div class="out" id="out"></div>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <h4>Laws in effect</h4>
+      <ul class="laws" id="laws"></ul>
+    </div>
+    <div class="card">
+      <h4>Grammar</h4>
+      <p class="small">
+        A sentence is <code>key=value</code>, read left to right.
+        The keys are <code class="k-you">you</code>, <code class="k-win">win</code>,
+        <code class="k-stop">stop</code> and <code class="k-kill">kill</code>.
+        Every character in the value takes on that meaning.<br><br>
+        A sentence begins at its key, and <b>anything touching its end joins the value.</b>
+        Type locked in a sentence is only type: it can be pushed, and nothing more.
+      </p>
+    </div>
+    <div class="card keys">
+      <kbd>←↑→↓</kbd> or <kbd>wasd</kbd> move<br>
+      <kbd>z</kbd> undo &nbsp; <kbd>r</kbd> restart<br>
+      <kbd>n</kbd> <kbd>p</kbd> next / previous<br>
+      <kbd>m</kbd> sound: <span id="soundState">on</span>
+    </div>
+  </aside>
+</main>
+<footer>set in Alfa Slab One &amp; Courier Prime · every level verified by a breadth-first solver</footer>
+
+<script type="module">
+/*__ENGINE__*/
+/*__LEVELS__*/
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem('pushdown:' + k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('pushdown:' + k, JSON.stringify(v)); } catch {} },
+};
+const PAR = /*__PARS__*/[];
+const done = new Set(store.get('done', []));
+let idx = Math.min(store.get('level', 0), LEVELS.length - 1);
+let custom = null;                 // a level from the editor or a share link
+let grid, ids, history, moves, over = false;
+let nextId = 1, cs = 40;
+let prevStatements = new Set();  // stick positions last frame
+let prevMeanings = new Set();    // `key=value` sentences last frame
+
+const current = () => custom ?? LEVELS[idx];
+
+// ---------------- sound: a small synthesized print shop ----------------
+const sound = {
+  on: store.get('sound', true), ctx: null,
+  init() { if (!this.ctx) try { this.ctx = new AudioContext(); } catch {} return this.ctx; },
+  noise(t, dur, freq, q, gain, type = 'bandpass') {
+    const c = this.ctx, len = Math.ceil(c.sampleRate * dur);
+    const buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+    const g = c.createGain(); g.gain.value = gain;
+    src.connect(f).connect(g).connect(c.destination); src.start(t);
+  },
+  tone(t, freq, dur, gain, type = 'sine', to = null) {
+    const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + dur);
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur);
+  },
+  play(kind, arg) {
+    if (!this.on || !this.init()) return;
+    const t = this.ctx.currentTime + 0.005, jitter = 1 + (Math.random() - .5) * .12;
+    if (kind === 'step') { this.noise(t, .05, 1700 * jitter, 3, .5); this.tone(t, 210 * jitter, .05, .12); }
+    if (kind === 'push') { this.noise(t, .07, 900 * jitter, 2.5, .8); this.noise(t + .018, .06, 1300 * jitter, 3, .4); this.tone(t, 140, .08, .18); }
+    if (kind === 'thud') { this.noise(t, .09, 260, 1, .9, 'lowpass'); }
+    if (kind === 'bell') {
+      const f = { you: 660, win: 880, stop: 494, kill: 587 }[arg] ?? 740;
+      for (const [m, g] of [[1, .16], [2.76, .06], [5.4, .03]]) this.tone(t, f * m, 1.3 / m, g);
+    }
+    if (kind === 'break') { this.tone(t, 392, .18, .09, 'triangle'); this.tone(t + .08, 311, .25, .08, 'triangle'); }
+    if (kind === 'press') {
+      this.noise(t, .25, 180, .8, 1.4, 'lowpass'); this.tone(t, 120, .3, .35, 'sine', 45);
+      [0, 4, 7, 12].forEach((s, i) => this.tone(t + .28 + i * .09, 523 * 2 ** (s / 12), 1.4, .09));
+    }
+    if (kind === 'death') { this.tone(t, 220, .6, .15, 'sawtooth', 55); this.noise(t, .3, 400, .7, .4, 'lowpass'); }
+    if (kind === 'undo') { this.noise(t, .04, 2400, 4, .3); }
+  },
+};
+
+// ---------------- level lifecycle ----------------
+function load() {
+  const lvl = current();
+  grid = toGrid(lvl.map);
+  ids = grid.map(row => row.map(ch => (ch === ' ' ? null : nextId++)));
+  history = []; moves = 0; over = false;
+  const initial = parse(grid).statements;
+  prevStatements = new Set(initial.map(sKey));
+  prevMeanings = new Set(initial.map(meaning));
+  $('title').innerHTML = custom ? '' : `<small>No.${idx + 1}</small>`;
+  $('title').append(lvl.title);
+  $('hint').textContent = lvl.hint || '';
+  hideSheet();
+  $('board').innerHTML = '';
+  blocks.clear(); sticks.clear();
+  renderDrawer(); layout(); render();
+}
+
+function renderDrawer() {
+  const bar = $('drawer');
+  bar.innerHTML = '';
+  LEVELS.forEach((l, i) => {
+    const b = document.createElement('button');
+    b.textContent = i + 1; b.title = l.title;
+    if (done.has(i)) b.classList.add('done');
+    if (!custom && i === idx) b.classList.add('cur');
+    b.onclick = () => { custom = null; idx = i; store.set('level', idx); closeEditor(); load(); };
+    bar.append(b);
+  });
+  const e = document.createElement('button');
+  e.textContent = 'editor'; e.className = 'wide' + (custom ? ' cur' : '');
+  e.onclick = openEditor;
+  bar.append(e);
+}
+
+// ---------------- rendering ----------------
+const blocks = new Map();   // id -> element
+const sticks = new Map();   // statement key -> element
+const sKey = s => `${s.r}:${s.c}:${s.len}:${s.key}=${s.value}`;
+const meaning = s => `${s.key}=${s.value}`;
+
+function layout() {
+  const H = grid.length, W = grid[0].length;
+  const avail = $('bed').clientWidth - 52;
+  cs = Math.max(20, Math.min(58, Math.floor(avail / W), Math.floor((innerHeight * .62) / H)));
+  const board = $('board');
+  board.style.width = W * cs + 'px'; board.style.height = H * cs + 'px';
+  board.querySelectorAll('.slot').forEach(s => s.remove());
+  for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    Object.assign(s.style, { left: c * cs + 2 + 'px', top: r * cs + 2 + 'px', width: cs - 4 + 'px', height: cs - 4 + 'px' });
+    board.prepend(s);
+  }
+  for (const el of blocks.values()) sizeBlock(el);
+}
+function sizeBlock(el) {
+  el.style.width = el.style.height = cs - 4 + 'px';
+  el.style.fontSize = Math.round(cs * .56) + 'px';
+}
+
+function render() {
+  const parsed = parse(grid);
+  const board = $('board');
+  const seen = new Set();
+  grid.forEach((row, r) => row.forEach((ch, c) => {
+    const id = ids[r][c];
+    if (id == null) return;
+    seen.add(id);
+    let el = blocks.get(id);
+    if (!el) {
+      el = document.createElement('div');
+      el.innerHTML = '<span></span>';
+      el.firstChild.textContent = ch;
+      sizeBlock(el);
+      el.style.transition = 'none';
+      board.append(el); blocks.set(id, el);
+      requestAnimationFrame(() => (el.style.transition = ''));
+    }
+    el.style.transform = `translate(${c * cs + 2}px, ${r * cs + 2}px)`;
+    const t = parsed.text[r][c];
+    let cls = 'blk';
+    if (t) cls += ' t t-' + t;
+    else {
+      const p = KEYS.filter(k => parsed.rules[k].has(ch));
+      cls += p.length ? p.map(k => ' o-' + k).join('') : ' inert';
+    }
+    el.className = cls;
+  }));
+  for (const [id, el] of blocks) if (!seen.has(id)) {
+    blocks.delete(id); el.classList.add('gone'); setTimeout(() => el.remove(), 300);
+  }
+
+  // composing sticks under each live sentence
+  const now = new Set();
+  for (const s of parsed.statements) {
+    const k = sKey(s); now.add(k);
+    let el = sticks.get(k);
+    if (!el) {
+      el = document.createElement('div'); el.className = 'stick'; el.dataset.key = s.key;
+      board.append(el); sticks.set(k, el);
+      if (!prevStatements.has(k)) { el.classList.add('fresh'); }
+    }
+    Object.assign(el.style, { left: s.c * cs - 3 + 'px', top: s.r * cs + cs * .38 + 'px', width: s.len * cs + 6 + 'px', height: cs * .62 + 8 + 'px' });
+  }
+  for (const [k, el] of sticks) if (!now.has(k)) { el.remove(); sticks.delete(k); }
+
+  // sound: which sentences appeared or vanished (ignoring mere sliding)
+  const after = new Set(parsed.statements.map(meaning));
+  const formed = parsed.statements.find(s => !prevMeanings.has(meaning(s)));
+  const broke = [...prevMeanings].some(m => !after.has(m));
+  prevStatements = now; prevMeanings = after;
+
+  renderLaws(parsed);
+  const par = custom ? null : PAR[idx];
+  $('counter').innerHTML = `<b>${moves}</b> moves` + (par ? ` · par ${par}` : '');
+  return { formed, broke };
+}
+
+function renderLaws(parsed) {
+  const ul = $('laws');
+  ul.innerHTML = '';
+  const words = { you: 'are you', win: 'win', stop: 'are solid', kill: 'kill' };
+  for (const k of KEYS) {
+    if (!parsed.rules[k].size) continue;
+    const li = document.createElement('li');
+    const g = document.createElement('span'); g.className = 'g';
+    for (const ch of parsed.rules[k]) { const i = document.createElement('i'); i.textContent = ch; g.append(i); }
+    const w = document.createElement('span'); w.className = 'k-' + k; w.textContent = words[k];
+    li.append(g, w); ul.append(li);
+  }
+  if (!ul.children.length) ul.innerHTML = '<li class="none">no laws. nothing matters.</li>';
+}
+
+// ---------------- play ----------------
+function move(dir) {
+  if (over) return;
+  sound.init();
+  const res = step(grid, dir, ids);
+  if (!res.moved && !res.won) {
+    const b = $('board'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+    sound.play('thud');
+    return;
+  }
+  const pushed = countMoved(grid, ids, res.ids) > youCells(grid).length;
+  history.push({ grid, ids });
+  grid = res.grid; ids = res.ids; moves++;
+  const { formed, broke } = render();
+  if (formed) sound.play('bell', formed.key); else if (broke) sound.play('break');
+  sound.play(pushed ? 'push' : 'step');
+  if (res.won) return setTimeout(win, 160);
+  if (!youCells(grid).length) setTimeout(() => {
+    sound.play('death');
+    showSheet('dead', 'nobody', 'you are no one', null,
+      'no loose type answers to <b>you</b> any more. undo, and think about what you touched.',
+      [['undo  (z)', undo, true], ['restart', load]]);
+  }, 200);
+}
+function countMoved(g, a, b) {
+  const pos = new Map();
+  a.forEach((row, r) => row.forEach((id, c) => id && pos.set(id, r * 1000 + c)));
+  let n = 0;
+  b.forEach((row, r) => row.forEach((id, c) => { if (id && pos.get(id) !== r * 1000 + c) n++; }));
+  return n;
+}
+
+function undo() {
+  if (!history.length) return;
+  ({ grid, ids } = history.pop()); moves--; over = false;
+  hideSheet();
+  sound.play('undo');
+  render();
+}
+
+function win() {
+  over = true;
+  if (!custom) { done.add(idx); store.set('done', [...done]); }
+  const par = custom ? null : PAR[idx];
+  const last = !custom && idx === LEVELS.length - 1;
+  const note = par == null ? `set in ${moves} moves.` :
+    moves <= par ? `set in ${moves} moves: par. the solver couldn't beat you.` :
+    `set in ${moves} moves. the solver found a way in ${par}.`;
+  sound.play('press');
+  showSheet('won', `proof · ${custom ? 'your level' : 'No.' + (idx + 1)}`, last ? 'the end' : 'solved', grid,
+    note + (last ? '<br>you have read everything. now open the editor and write your own laws.' : ''),
+    [...(custom ? [['back to editor', openEditor, true]] : last ? [['open the editor', openEditor, true]] : [['next  ⏎', next, true]]),
+     ['replay', load]]);
+  renderDrawer();
+}
+
+function hideSheet() { $('sheet').className = 'sheet'; $('veil').className = 'veil'; }
+function showSheet(kind, stamp, title, printGrid, html, buttons) {
+  over = true;
+  $('stamp').textContent = stamp;
+  $('sheetTitle').textContent = title;
+  $('sheetText').innerHTML = html;
+  const pr = $('print'); pr.innerHTML = '';
+  if (printGrid) {
+    // the proof: the final bed, printed. text in its ink, objects in black.
+    const parsed = parse(printGrid);
+    const W = printGrid[0].length, pcs = Math.min(24, Math.floor((Math.min(620, innerWidth - 32) - 90) / W));
+    pr.style.gridTemplateColumns = `repeat(${W}, ${pcs}px)`;
+    pr.style.fontSize = pcs * .8 + 'px';
+    printGrid.forEach((row, r) => row.forEach((ch, c) => {
+      const s = document.createElement('span');
+      s.style.height = pcs + 'px';
+      s.textContent = ch;
+      const t = parsed.text[r][c];
+      s.style.color = t ? `var(--${t})` : 'var(--ink)';
+      pr.append(s);
+    }));
+  }
+  const row = $('sheetButtons'); row.innerHTML = '';
+  for (const [label, fn, primary] of buttons) {
+    const b = document.createElement('button');
+    b.className = 'btn' + (primary ? ' primary' : '');
+    b.textContent = label; b.onclick = fn;
+    row.append(b);
+  }
+  $('sheet').className = 'sheet show ' + kind; $('veil').className = 'veil show';
+}
+
+function next() { if (idx < LEVELS.length - 1) { idx++; store.set('level', idx); custom = null; load(); } }
+function prev() { if (idx > 0) { idx--; store.set('level', idx); custom = null; load(); } }
+
+// ---------------- editor ----------------
+function openEditor() {
+  $('editor').classList.add('show');
+  if (!$('src').value) $('src').value = (custom ?? LEVELS[idx]).map.join('\n');
+  hideSheet(); over = false;
+  $('src').focus();
+}
+function closeEditor() { $('editor').classList.remove('show'); }
+function editorLevel() {
+  const lines = $('src').value.replace(/\t/g, '  ').split('\n');
+  while (lines.length && !lines.at(-1).trim()) lines.pop();
+  return { title: 'your level', hint: '', map: lines.length ? lines : [' '] };
+}
+$('play').onclick = () => { custom = editorLevel(); load(); $('src').blur(); };
+$('solveBtn').onclick = () => {
+  $('out').textContent = 'the solver is thinking…';
+  setTimeout(() => {
+    const res = solve(editorLevel().map, { maxStates: 150_000 });
+    const arrows = { up: '↑', down: '↓', left: '←', right: '→' };
+    $('out').textContent = res.solved
+      ? `solvable in ${res.moves.length} moves: ${res.moves.map(m => arrows[m]).join('')}   (${res.explored.toLocaleString()} positions searched)`
+      : res.exhausted ? `impossible. all ${res.explored.toLocaleString()} reachable positions are dead ends.`
+      : `gave up after ${res.explored.toLocaleString()} positions. maybe solvable, maybe not.`;
+  }, 30);
+};
+$('copy').onclick = async () => {
+  const url = location.href.split('#')[0] + '#' + encodeURIComponent($('src').value);
+  try { await navigator.clipboard.writeText(url); $('out').textContent = 'link copied.'; }
+  catch { $('out').textContent = url; }
+};
+
+// ---------------- input ----------------
+const keymap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', s: 'down', a: 'left', d: 'right' };
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (keymap[e.key]) { e.preventDefault(); move(keymap[e.key]); }
+  else if (e.key === 'z' || e.key === 'Backspace') undo();
+  else if (e.key === 'r') load();
+  else if (e.key === 'n') next();
+  else if (e.key === 'p') prev();
+  else if (e.key === 'm') { sound.on = !sound.on; store.set('sound', sound.on); $('soundState').textContent = sound.on ? 'on' : 'off'; }
+  else if (e.key === 'Enter' && over) { e.preventDefault(); $('sheetButtons').firstChild?.click(); }
+});
+$('pad').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.d) move(b.dataset.d); else if (b.dataset.k === 'z') undo(); else load();
+});
+let touch = null;
+$('bed').addEventListener('touchstart', e => { touch = e.touches[0]; }, { passive: true });
+$('bed').addEventListener('touchend', e => {
+  if (!touch) return;
+  const t = e.changedTouches[0], dx = t.clientX - touch.clientX, dy = t.clientY - touch.clientY;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) > 24) move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  touch = null;
+});
+addEventListener('resize', () => { layout(); render(); });
+$('soundState').textContent = sound.on ? 'on' : 'off';
+
+if (location.hash.length > 1) {
+  $('src').value = decodeURIComponent(location.hash.slice(1));
+  custom = editorLevel(); custom.title = 'a shared level';
+  openEditor();
+}
+document.fonts.ready.then(() => { layout(); render(); });
+load();
+</script>
+</body>
+</html>
