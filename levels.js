@@ -160,4 +160,42 @@ export const LEVELS = [
       ' stop=#   win=$  ',
     ],
   },
+  // ---- apocrypha: mined by miner.js, not designed ----
+  {
+    title: 'exchange',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      '  @  @ ',
+      ' you=x@',
+      '  win=$',
+      '   =   ',
+      '  #    ',
+    ],
+  },
+  {
+    title: 'understudy',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      '     @ ',
+      '     = ',
+      ' you=x@',
+      '  win=x',
+      '       ',
+    ],
+  },
+  {
+    title: 'the long way round',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      ' kill=~',
+      '       ',
+      'win=x  ',
+      'you=@x ',
+      '    @  ',
+      ' =     ',
+    ],
+  },
 ];

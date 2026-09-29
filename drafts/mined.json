@@ -1,0 +1,2211 @@
+[
+ {
+  "map": [
+   "          ",
+   "          ",
+   "n  win=   ",
+   "you=@     ",
+   " win=$    ",
+   "  $   o  @"
+  ],
+  "par": 18,
+  "changes": 5,
+  "explored": 40032,
+  "score": 66
+ },
+ {
+  "map": [
+   "    x  win=  ",
+   "           @ ",
+   "          ###",
+   " you=@    #$#",
+   "  stop=#  ###",
+   "             "
+  ],
+  "par": 16,
+  "changes": 4,
+  "explored": 1500,
+  "score": 55.92
+ },
+ {
+  "map": [
+   "          ",
+   "      x   ",
+   "   stop=# ",
+   "win=      ",
+   "  you=@   ",
+   "    ###   ",
+   "    #$#  @",
+   "    ###   "
+  ],
+  "par": 17,
+  "changes": 4,
+  "explored": 25643,
+  "score": 55.72
+ },
+ {
+  "map": [
+   "           ",
+   " #      ###",
+   "@       #$#",
+   "you=@   ###",
+   "   o stop=#",
+   " win=      "
+  ],
+  "par": 26,
+  "changes": 3,
+  "explored": 18041,
+  "score": 55.1
+ },
+ {
+  "map": [
+   " you=@   ",
+   "     ### ",
+   "     #$# ",
+   "     ### ",
+   "  stop=# ",
+   "@ win= x "
+  ],
+  "par": 15,
+  "changes": 4,
+  "explored": 12142,
+  "score": 54.39
+ },
+ {
+  "map": [
+   "   you=@  ",
+   "    kill=~",
+   "   stop=# ",
+   "   @  ~~~ ",
+   "win=  ~$~ ",
+   "      ~~~ "
+  ],
+  "par": 15,
+  "changes": 4,
+  "explored": 25196,
+  "score": 53.74
+ },
+ {
+  "map": [
+   "          ###",
+   "      @   #$#",
+   "kill=~    ###",
+   "  sotp=#     ",
+   "    win=$    ",
+   " you=@       "
+  ],
+  "par": 14,
+  "changes": 4,
+  "explored": 22784,
+  "score": 52.86
+ },
+ {
+  "map": [
+   "###      ",
+   "#$#     @",
+   "###      ",
+   "stop=#@  ",
+   "you=@x x ",
+   " win=$   ",
+   "         "
+  ],
+  "par": 12,
+  "changes": 4,
+  "explored": 623,
+  "score": 51.97
+ },
+ {
+  "map": [
+   "  kill=~     ",
+   "@            ",
+   "kill=~x  ~~~ ",
+   "         ~$~ ",
+   "   you=@ ~~~ ",
+   "x     o      ",
+   "   =    win= "
+  ],
+  "par": 12,
+  "changes": 4,
+  "explored": 13426,
+  "score": 51.33
+ },
+ {
+  "map": [
+   "~~~     x",
+   "~$~    @ ",
+   "~~~      ",
+   "   win=$ ",
+   "   kill=~",
+   "you=@x = "
+  ],
+  "par": 13,
+  "changes": 4,
+  "explored": 45155,
+  "score": 50.74
+ },
+ {
+  "map": [
+   "@  ### x ",
+   "   #$#   ",
+   "   ###   ",
+   " you=@   ",
+   "stop=#   ",
+   "   win=  "
+  ],
+  "par": 21,
+  "changes": 3,
+  "explored": 28315,
+  "score": 49.58
+ },
+ {
+  "map": [
+   "        win=",
+   "       @    ",
+   "  kill=~    ",
+   " you=@  ~~~ ",
+   "        ~$~ ",
+   "  you=@ ~~~ ",
+   "         $  "
+  ],
+  "par": 10,
+  "changes": 4,
+  "explored": 12194,
+  "score": 49.39
+ },
+ {
+  "map": [
+   "   stop=#   ",
+   "  ###   @   ",
+   "  #$# win=$ ",
+   "  ###       ",
+   "     you=@  ",
+   "           #",
+   "    you=@   "
+  ],
+  "par": 10,
+  "changes": 4,
+  "explored": 34570,
+  "score": 48.27
+ },
+ {
+  "map": [
+   "you=@x ~  ",
+   "stop=#@  @",
+   " win=     ",
+   "        @ ",
+   "   stop=# ",
+   " ###      ",
+   " #$#  x   ",
+   " ###      "
+  ],
+  "par": 8,
+  "changes": 4,
+  "explored": 516,
+  "score": 47.97
+ },
+ {
+  "map": [
+   " you=@    ###",
+   "  stop=#  #$#",
+   "          ###",
+   "             ",
+   "             ",
+   "    win=x   @"
+  ],
+  "par": 17,
+  "changes": 3,
+  "explored": 316,
+  "score": 46.98
+ },
+ {
+  "map": [
+   "  n    win=  ",
+   "     stop=#  ",
+   "             ",
+   " you=@       ",
+   "      ### @  ",
+   "      #$#  o ",
+   "      ###    "
+  ],
+  "par": 15,
+  "changes": 3,
+  "explored": 1983,
+  "score": 44.9
+ },
+ {
+  "map": [
+   "  you=@x     ",
+   "            =",
+   " win=$       ",
+   "stop=#      @",
+   "    sotp=#   ",
+   "      ###    ",
+   "      #$# x  ",
+   "      ###    "
+  ],
+  "par": 19,
+  "changes": 3,
+  "explored": 82038,
+  "score": 44.9
+ },
+ {
+  "map": [
+   "           ",
+   "           ",
+   "       x   ",
+   "     stop=#",
+   " ###       ",
+   " #$#  you=@",
+   " ###       ",
+   "  win=  @  "
+  ],
+  "par": 17,
+  "changes": 3,
+  "explored": 60312,
+  "score": 43.98
+ },
+ {
+  "map": [
+   " win=     ",
+   "      ### ",
+   "  @   #$# ",
+   "      ### ",
+   "     you=@",
+   " stop=#   ",
+   "          "
+  ],
+  "par": 14,
+  "changes": 3,
+  "explored": 12354,
+  "score": 43.38
+ },
+ {
+  "map": [
+   "           ",
+   "     win=  ",
+   "  you=@    ",
+   "   sotp=#  ",
+   "o kill=~   ",
+   " ###      @",
+   " #$#       ",
+   " ###       "
+  ],
+  "par": 15,
+  "changes": 3,
+  "explored": 32358,
+  "score": 43.38
+ },
+ {
+  "map": [
+   "n      ###   ",
+   "win=   #$#   ",
+   "       ###   ",
+   "             ",
+   "$  @ stop=#  ",
+   "    you=@    "
+  ],
+  "par": 14,
+  "changes": 3,
+  "explored": 15082,
+  "score": 43.25
+ },
+ {
+  "map": [
+   "win=     @",
+   "   stop=# ",
+   "you=@     ",
+   "          ",
+   "   ###    ",
+   "   #$#    ",
+   "   ###    "
+  ],
+  "par": 15,
+  "changes": 3,
+  "explored": 36751,
+  "score": 43.16
+ },
+ {
+  "map": [
+   "       @  @",
+   "           ",
+   "n   ~~~    ",
+   "x   ~$~    ",
+   "    ~~~    ",
+   "   kill=~x ",
+   "   you=@   ",
+   "  win=     "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 1760,
+  "score": 42.91
+ },
+ {
+  "map": [
+   "        x",
+   "      ~~~",
+   "@  @  ~$~",
+   "      ~~~",
+   "  kill=~x",
+   "  you=@  ",
+   "  win=   "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 3801,
+  "score": 42.81
+ },
+ {
+  "map": [
+   "            ",
+   "    you=@   ",
+   " @     #    ",
+   "     stop=# ",
+   "  ###       ",
+   "  #$#  win= ",
+   "  ###       "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 5750,
+  "score": 42.71
+ },
+ {
+  "map": [
+   "     win=$   ",
+   "         ### ",
+   "  stop=# #$# ",
+   "    x    ### ",
+   "     you=@   ",
+   "      @      "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 9138,
+  "score": 42.54
+ },
+ {
+  "map": [
+   "      ### ",
+   "      #$# ",
+   "      ### ",
+   "x   stop=#",
+   " win=   @ ",
+   "  you=@x  "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 13317,
+  "score": 42.33
+ },
+ {
+  "map": [
+   "     win=   ",
+   "   stop=# i ",
+   "        ~~~ ",
+   "      @ ~$~ ",
+   "you=@   ~~~ ",
+   "#           ",
+   "    kill=~  ",
+   "  x         "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 17275,
+  "score": 42.14
+ },
+ {
+  "map": [
+   "         @ ",
+   "win=       ",
+   "kill=~x ~~~",
+   "you=@   ~$~",
+   "        ~~~",
+   "       n x "
+  ],
+  "par": 12,
+  "changes": 3,
+  "explored": 406,
+  "score": 41.98
+ },
+ {
+  "map": [
+   "    win=   ",
+   "     stop=#",
+   "           ",
+   "           ",
+   "  you=@x   ",
+   "    ###   @",
+   "    #$#  x ",
+   "    ###    "
+  ],
+  "par": 12,
+  "changes": 3,
+  "explored": 1563,
+  "score": 41.92
+ },
+ {
+  "map": [
+   "            ",
+   "    stop=#  ",
+   " @    win=x ",
+   "            ",
+   "   $   ###  ",
+   "       #$#  ",
+   " you=@ ###  "
+  ],
+  "par": 12,
+  "changes": 3,
+  "explored": 7046,
+  "score": 41.65
+ },
+ {
+  "map": [
+   " you=@    ",
+   "          ",
+   "          ",
+   "    ###   ",
+   "    #$#   ",
+   "    ###   ",
+   " @  sotp=#",
+   "win=      "
+  ],
+  "par": 12,
+  "changes": 3,
+  "explored": 10393,
+  "score": 41.48
+ },
+ {
+  "map": [
+   "~~~        @",
+   "~$~         ",
+   "~~~ x       ",
+   "kill=~x     ",
+   "   you=@x   ",
+   "  stop=#    ",
+   "x      win= "
+  ],
+  "par": 13,
+  "changes": 3,
+  "explored": 30606,
+  "score": 41.47
+ },
+ {
+  "map": [
+   "     ### ",
+   "     #$# ",
+   "  n  ### ",
+   "win=$    ",
+   " you=@   ",
+   "  sotp=# ",
+   "@        "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 5202,
+  "score": 40.74
+ },
+ {
+  "map": [
+   "     ~~~  ",
+   "     ~$~  ",
+   "@    ~~~  ",
+   "  kill=~  ",
+   "          ",
+   "    win=  ",
+   "   you=@  ",
+   "you=@     "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 6434,
+  "score": 40.68
+ },
+ {
+  "map": [
+   "win=        ",
+   "   you=@x o ",
+   "  @   kill=~",
+   "  ~~~       ",
+   "  ~$~       ",
+   "  ~~~     x "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 9062,
+  "score": 40.55
+ },
+ {
+  "map": [
+   "~~~        ",
+   "~$~        ",
+   "~~~ you=@x ",
+   "           ",
+   "     kill=~",
+   " @    win=$",
+   "       x   ",
+   "           "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 17357,
+  "score": 40.13
+ },
+ {
+  "map": [
+   "###          ",
+   "#$#  stop=#  ",
+   "### @        ",
+   "             ",
+   "    you=@x x ",
+   "@     win=$  "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 23262,
+  "score": 39.84
+ },
+ {
+  "map": [
+   "             ",
+   "             ",
+   " win=  ~~~   ",
+   "  @    ~$~   ",
+   "       ~~~   ",
+   " kill=~      ",
+   "   you=@     ",
+   "             "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 35211,
+  "score": 39.24
+ },
+ {
+  "map": [
+   "   ###    ",
+   "x  #$#    ",
+   "   ###    ",
+   "    stop=#",
+   "          ",
+   "win= @    ",
+   "  sotp=#  ",
+   "you=@x    "
+  ],
+  "par": 12,
+  "changes": 3,
+  "explored": 57725,
+  "score": 39.11
+ },
+ {
+  "map": [
+   "    you=@x   ",
+   "   x         ",
+   "   ### kill=~",
+   "   #$#       ",
+   "   ###       ",
+   "             ",
+   " stop=#@   @ ",
+   " win=$       "
+  ],
+  "par": 9,
+  "changes": 3,
+  "explored": 250,
+  "score": 38.99
+ },
+ {
+  "map": [
+   "   @      ",
+   " stop=#   ",
+   "win=      ",
+   "       ###",
+   "  =    #$#",
+   "       ###",
+   " n you=@  ",
+   "          "
+  ],
+  "par": 10,
+  "changes": 3,
+  "explored": 20891,
+  "score": 38.96
+ },
+ {
+  "map": [
+   "    win=$ ",
+   "     win=$",
+   " x @   ###",
+   "  @    #$#",
+   "       ###",
+   "you=@x    ",
+   "  stop=#  ",
+   "  @       "
+  ],
+  "par": 9,
+  "changes": 3,
+  "explored": 1190,
+  "score": 38.94
+ },
+ {
+  "map": [
+   "  win=   ",
+   "@  ~~~   ",
+   "   ~$~   ",
+   "   ~~~   ",
+   "kill=~x  ",
+   " x    @  ",
+   "    you=@"
+  ],
+  "par": 9,
+  "changes": 3,
+  "explored": 1154,
+  "score": 38.94
+ },
+ {
+  "map": [
+   "   you=@ ",
+   "win=    @",
+   "   sotp=#",
+   "  x ###  ",
+   "#   #$#  ",
+   "    ###  "
+  ],
+  "par": 9,
+  "changes": 3,
+  "explored": 1713,
+  "score": 38.91
+ },
+ {
+  "map": [
+   " you=@x      ",
+   "             ",
+   "    @ kill=~ ",
+   "x       win= ",
+   "             ",
+   "      i ~~~  ",
+   "  you=@ ~$~  ",
+   "        ~~~  "
+  ],
+  "par": 9,
+  "changes": 3,
+  "explored": 4883,
+  "score": 38.76
+ },
+ {
+  "map": [
+   "    you=@x  ",
+   "            ",
+   "       ~~~  ",
+   "       ~$~  ",
+   "       ~~~  ",
+   " win=       ",
+   " kill=~x  @ ",
+   "    =      x"
+  ],
+  "par": 8,
+  "changes": 3,
+  "explored": 187,
+  "score": 37.99
+ },
+ {
+  "map": [
+   "    kill=~",
+   "      win=",
+   "          ",
+   "@     ### ",
+   "      #$# ",
+   "      ### ",
+   "    sotp=#",
+   "   you=@ x"
+  ],
+  "par": 21,
+  "changes": 2,
+  "explored": 62265,
+  "score": 37.89
+ },
+ {
+  "map": [
+   " ~~~      @  ",
+   " ~$~         ",
+   " ~~~  kill=~ ",
+   "   you=@x    ",
+   "             ",
+   "        x    ",
+   "      win=$  "
+  ],
+  "par": 8,
+  "changes": 3,
+  "explored": 2364,
+  "score": 37.88
+ },
+ {
+  "map": [
+   "       @  ",
+   "  win=    ",
+   "    ~~~   ",
+   "    ~$~   ",
+   "    ~~~   ",
+   "kill=~    ",
+   " you=@    "
+  ],
+  "par": 21,
+  "changes": 2,
+  "explored": 65154,
+  "score": 37.74
+ },
+ {
+  "map": [
+   "   ###   ",
+   "   #$#   ",
+   "   ###   ",
+   "     @   ",
+   "         ",
+   "  stop=# ",
+   "  win=x  ",
+   "  you=@  "
+  ],
+  "par": 21,
+  "changes": 2,
+  "explored": 76030,
+  "score": 37.2
+ },
+ {
+  "map": [
+   "        @  ",
+   "kill=~x  x ",
+   "  you=@x   ",
+   "     ~~~   ",
+   "     ~$~   ",
+   "     ~~~   ",
+   "n    win= n",
+   "           "
+  ],
+  "par": 19,
+  "changes": 2,
+  "explored": 37471,
+  "score": 37.13
+ },
+ {
+  "map": [
+   "    x        ",
+   "    kill=~   ",
+   "             ",
+   "    you=@x   ",
+   "win=$        ",
+   "        ~~~  ",
+   " @      ~$~  ",
+   " kill=~ ~~~  "
+  ],
+  "par": 11,
+  "changes": 3,
+  "explored": 78063,
+  "score": 37.1
+ },
+ {
+  "map": [
+   "@  win=$  ",
+   "   stop=# ",
+   "          ",
+   " you=@x   ",
+   " i   ###  ",
+   "   x #$#  ",
+   "  x  ###  "
+  ],
+  "par": 7,
+  "changes": 3,
+  "explored": 489,
+  "score": 36.98
+ },
+ {
+  "map": [
+   "    win=  ",
+   " kill=~   ",
+   "    @     ",
+   "   ~~~    ",
+   "   ~$~ x  ",
+   "   ~~~    ",
+   " you=@x ~ "
+  ],
+  "par": 7,
+  "changes": 3,
+  "explored": 566,
+  "score": 36.97
+ },
+ {
+  "map": [
+   "@  ###     ",
+   "i  #$#     ",
+   "   ###   x ",
+   " $    win= ",
+   "    stop=#@",
+   "  you=@x   "
+  ],
+  "par": 7,
+  "changes": 3,
+  "explored": 502,
+  "score": 36.97
+ },
+ {
+  "map": [
+   "   ###  ~ ",
+   " @ #$#    ",
+   "   ###    ",
+   "  you=@   ",
+   "   stop=# ",
+   " win= o   ",
+   " stop=#   "
+  ],
+  "par": 17,
+  "changes": 2,
+  "explored": 5970,
+  "score": 36.7
+ },
+ {
+  "map": [
+   " win=        ",
+   "     @       ",
+   "       you=@ ",
+   "       kill=~",
+   " ~~~         ",
+   " ~$~         ",
+   " ~~~ n       "
+  ],
+  "par": 17,
+  "changes": 2,
+  "explored": 8827,
+  "score": 36.56
+ },
+ {
+  "map": [
+   "  x       ",
+   "          ",
+   "  $ @     ",
+   "   you=@x ",
+   "          ",
+   "win=      "
+  ],
+  "par": 18,
+  "changes": 2,
+  "explored": 32525,
+  "score": 36.37
+ },
+ {
+  "map": [
+   "     you=@   ",
+   " kill=~      ",
+   "     ~~~     ",
+   "     ~$~     ",
+   "     ~~~     ",
+   "           @ ",
+   "  win=       ",
+   "             "
+  ],
+  "par": 16,
+  "changes": 2,
+  "explored": 5773,
+  "score": 35.71
+ },
+ {
+  "map": [
+   " # you=@ ",
+   " win=$   ",
+   " # stop=#",
+   "@     ###",
+   "  x   #$#",
+   "      ###",
+   "         "
+  ],
+  "par": 17,
+  "changes": 2,
+  "explored": 51558,
+  "score": 34.42
+ },
+ {
+  "map": [
+   "win=$     @ ",
+   "   ###  n   ",
+   "   #$#      ",
+   "   ###      ",
+   "            ",
+   "          x ",
+   "stop=#      ",
+   "   you=@x   "
+  ],
+  "par": 15,
+  "changes": 2,
+  "explored": 12408,
+  "score": 34.38
+ },
+ {
+  "map": [
+   "you=@   ###",
+   "        #$#",
+   "        ###",
+   "           ",
+   "          @",
+   " stop=#    ",
+   "  win=$    ",
+   "  x   n    "
+  ],
+  "par": 14,
+  "changes": 2,
+  "explored": 2702,
+  "score": 33.86
+ },
+ {
+  "map": [
+   "            ",
+   "     stop=# ",
+   "  you=@     ",
+   "   n     ###",
+   "   @     #$#",
+   "       i ###",
+   "      win=x "
+  ],
+  "par": 14,
+  "changes": 2,
+  "explored": 8203,
+  "score": 33.59
+ },
+ {
+  "map": [
+   "   x       ",
+   "you=@x     ",
+   "           ",
+   "     ###   ",
+   "  ~  #$#   ",
+   "  @  ###   ",
+   "    stop=#@",
+   "  win=     "
+  ],
+  "par": 13,
+  "changes": 2,
+  "explored": 219,
+  "score": 32.99
+ },
+ {
+  "map": [
+   "           ",
+   "   you=@   ",
+   "  @        ",
+   "    sotp=# ",
+   "     win=x ",
+   "     ###   ",
+   "     #$#   ",
+   "     ###   "
+  ],
+  "par": 14,
+  "changes": 2,
+  "explored": 22320,
+  "score": 32.88
+ },
+ {
+  "map": [
+   "@            ",
+   "you=@        ",
+   "    win=$    ",
+   "             ",
+   "  $  ~      #",
+   "             ",
+   "             "
+  ],
+  "par": 13,
+  "changes": 2,
+  "explored": 3492,
+  "score": 32.83
+ },
+ {
+  "map": [
+   "    stop=#",
+   " kill=~   ",
+   "         x",
+   "          ",
+   "   you=@x ",
+   " win=$ ###",
+   "       #$#",
+   "    @  ###"
+  ],
+  "par": 14,
+  "changes": 2,
+  "explored": 24590,
+  "score": 32.77
+ },
+ {
+  "map": [
+   "   win=      ",
+   "     x       ",
+   "             ",
+   "             ",
+   "   $         ",
+   " you=@x      ",
+   "   @     =   ",
+   "             "
+  ],
+  "par": 17,
+  "changes": 2,
+  "explored": 88498,
+  "score": 32.58
+ },
+ {
+  "map": [
+   " kill=~   ",
+   "~~~    x  ",
+   "~$~       ",
+   "~~~       ",
+   "you=@    @",
+   "   you=@  ",
+   "     win=$",
+   "          "
+  ],
+  "par": 13,
+  "changes": 2,
+  "explored": 8563,
+  "score": 32.57
+ },
+ {
+  "map": [
+   "            ",
+   "~~~  kill=~ ",
+   "~$~         ",
+   "~~~   @     ",
+   "win=$       ",
+   "       you=@",
+   "            "
+  ],
+  "par": 13,
+  "changes": 2,
+  "explored": 19903,
+  "score": 32
+ },
+ {
+  "map": [
+   " x kill=~    ",
+   "    you=@ ~~~",
+   "          ~$~",
+   "          ~~~",
+   "             ",
+   "             ",
+   "@       win= "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 200,
+  "score": 31.99
+ },
+ {
+  "map": [
+   "win=$      ",
+   "      you=@",
+   "   kill=~  ",
+   "  ~~~      ",
+   "  ~$~      ",
+   "  ~~~      ",
+   "@          ",
+   "           "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 120,
+  "score": 31.99
+ },
+ {
+  "map": [
+   "        @",
+   " stop=#  ",
+   "   sotp=#",
+   "    you=@",
+   "    ###  ",
+   "    #$#  ",
+   "    ###  ",
+   "win=     "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 460,
+  "score": 31.98
+ },
+ {
+  "map": [
+   "@           ",
+   "       win=$",
+   "you=@ kill=~",
+   "     ~~~    ",
+   "  #  ~$~    ",
+   "   @ ~~~    ",
+   "     win=$  "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 2316,
+  "score": 31.88
+ },
+ {
+  "map": [
+   "      kill=~",
+   "     ~~~  @ ",
+   "     ~$~    ",
+   "     ~~~  o ",
+   "   you=@x   ",
+   "kill=~x     ",
+   "          x ",
+   "  win=$     "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 3272,
+  "score": 31.84
+ },
+ {
+  "map": [
+   "             ",
+   "             ",
+   "             ",
+   "     you=@  x",
+   "      win=   ",
+   "   $    you=@",
+   "@            "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 4767,
+  "score": 31.76
+ },
+ {
+  "map": [
+   "  ###     ",
+   "  #$# @   ",
+   "  ###     ",
+   "          ",
+   "    you=@ ",
+   "$  win=   ",
+   "    ~     ",
+   " sotp=#   "
+  ],
+  "par": 15,
+  "changes": 2,
+  "explored": 77561,
+  "score": 31.12
+ },
+ {
+  "map": [
+   "       ### ",
+   "stop=# #$# ",
+   "       ### ",
+   "           ",
+   "           ",
+   "you=@      ",
+   "   you=@ @ ",
+   "     win=  "
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 81,
+  "score": 31
+ },
+ {
+  "map": [
+   "     you=@   ",
+   "win=         ",
+   "     @       ",
+   "kill=~x x ~~~",
+   "          ~$~",
+   "       =  ~~~"
+  ],
+  "par": 13,
+  "changes": 2,
+  "explored": 41736,
+  "score": 30.91
+ },
+ {
+  "map": [
+   "           ",
+   "     =     ",
+   "   win=    ",
+   "          $",
+   "@    you=@ ",
+   "     you=@ "
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 2081,
+  "score": 30.9
+ },
+ {
+  "map": [
+   "you=@x   ",
+   "     @   ",
+   "  ### x ~",
+   "  #$#    ",
+   "  ###    ",
+   "   stop=#",
+   "stop=#   ",
+   "$   win=$"
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 2759,
+  "score": 30.86
+ },
+ {
+  "map": [
+   "             ",
+   "   sotp=# @  ",
+   "you=@        ",
+   "          ###",
+   "  win=    #$#",
+   "          ###"
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 5210,
+  "score": 30.74
+ },
+ {
+  "map": [
+   "  @    ~~~",
+   "win=$  ~$~",
+   "       ~~~",
+   "   you=@  ",
+   "  $  =    ",
+   "kill=~    "
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 6714,
+  "score": 30.66
+ },
+ {
+  "map": [
+   "sotp=#      ",
+   "        x   ",
+   "     @      ",
+   "       ###  ",
+   "       #$#  ",
+   "       ###  ",
+   " you=@      ",
+   "       win= "
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 7801,
+  "score": 30.61
+ },
+ {
+  "map": [
+   "  ###  n    ",
+   "  #$#  you=@",
+   "  ###     # ",
+   " @    sotp=#",
+   "  win=      ",
+   "       you=@"
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 11547,
+  "score": 30.42
+ },
+ {
+  "map": [
+   "    win=    ",
+   "   ~~~      ",
+   "   ~$~      ",
+   "   ~~~      ",
+   "            ",
+   " x          ",
+   "   kill=~x  ",
+   "   you=@   @"
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 103,
+  "score": 29.99
+ },
+ {
+  "map": [
+   "you=@      ",
+   "     stop=#",
+   " @    ###  ",
+   "      #$#  ",
+   "      ###  ",
+   "   win=    "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 139,
+  "score": 29.99
+ },
+ {
+  "map": [
+   "        win=$",
+   "            x",
+   "  you=@x     ",
+   "    stop=#@  ",
+   "   ###       ",
+   "   #$#       ",
+   " ~ ###       ",
+   "      @      "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 460,
+  "score": 29.98
+ },
+ {
+  "map": [
+   "       you=@ ",
+   " @  you=@    ",
+   "  ###        ",
+   "  #$#        ",
+   "  ### win=   ",
+   " stop=# x    "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 514,
+  "score": 29.97
+ },
+ {
+  "map": [
+   "win=$    ",
+   "i i  ### ",
+   "     #$# ",
+   "     ### ",
+   "@ stop=# ",
+   "   you=@ ",
+   "   you=@ "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 719,
+  "score": 29.96
+ },
+ {
+  "map": [
+   " stop=#      ",
+   "you=@  stop=#",
+   "     @       ",
+   "   ###     = ",
+   "   #$# win=  ",
+   "   ###  o    "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 1225,
+  "score": 29.94
+ },
+ {
+  "map": [
+   "     stop=# ",
+   " x   #      ",
+   "  you=@x    ",
+   "  ###       ",
+   "  #$#       ",
+   "  ###       ",
+   "  you=@     ",
+   "  win=$ @   "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 1170,
+  "score": 29.94
+ },
+ {
+  "map": [
+   "     win=$  ",
+   "  you=@   @ ",
+   "###         ",
+   "#$# sotp=#  ",
+   "###         ",
+   "            "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 1456,
+  "score": 29.93
+ },
+ {
+  "map": [
+   "   @ ###     ",
+   "     #$# x   ",
+   "     ###     ",
+   "stop=#       ",
+   "win=$  you=@x",
+   "             "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 1486,
+  "score": 29.93
+ },
+ {
+  "map": [
+   "#    ###     ",
+   "     #$#     ",
+   "     ### @   ",
+   " o           ",
+   "   you=@     ",
+   "     sotp=#  ",
+   " win=        "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 2726,
+  "score": 29.86
+ },
+ {
+  "map": [
+   "@         ",
+   "  $       ",
+   "       x  ",
+   "  you=@x  ",
+   "   kill=~ ",
+   "  win=    "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 6423,
+  "score": 29.68
+ },
+ {
+  "map": [
+   "  ~~~     ",
+   "  ~$~     ",
+   "  ~~~    $",
+   "you=@     ",
+   " i     @  ",
+   "    kill=~",
+   "          ",
+   "win=      "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 8479,
+  "score": 29.58
+ },
+ {
+  "map": [
+   "     you=@  ",
+   "       @ ~~~",
+   "  you=@  ~$~",
+   "         ~~~",
+   "    kill=~  ",
+   "       win=$",
+   "            "
+  ],
+  "par": 11,
+  "changes": 2,
+  "explored": 29636,
+  "score": 29.52
+ },
+ {
+  "map": [
+   " ~~~  you=@",
+   " ~$~       ",
+   " ~~~ ~     ",
+   "           ",
+   " kill=~x   ",
+   "win=       ",
+   " @         ",
+   "    you=@  "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 10583,
+  "score": 29.47
+ },
+ {
+  "map": [
+   "         ~",
+   "   sotp=# ",
+   "### #     ",
+   "#$# stop=#",
+   "###    @  ",
+   "   win=$  ",
+   "you=@     "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 11021,
+  "score": 29.45
+ },
+ {
+  "map": [
+   "   @         ",
+   "   kill=~x   ",
+   "     win=    ",
+   "        you=@",
+   "   ~~~       ",
+   "   ~$~       ",
+   "   ~~~       "
+  ],
+  "par": 10,
+  "changes": 2,
+  "explored": 11398,
+  "score": 29.43
+ },
+ {
+  "map": [
+   "  you=@   ",
+   "  win= @  ",
+   "    ~~~   ",
+   "    ~$~   ",
+   "    ~~~   ",
+   "#   kill=~",
+   "       =  "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 57,
+  "score": 29
+ },
+ {
+  "map": [
+   "      ###",
+   "      #$#",
+   " @    ###",
+   "stop=#   ",
+   "win=  $  ",
+   " you=@ n "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 157,
+  "score": 28.99
+ },
+ {
+  "map": [
+   "      =     ",
+   "          @ ",
+   "         ~~~",
+   "         ~$~",
+   "you=@x   ~~~",
+   "kill=~x     ",
+   "     win=  x"
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 312,
+  "score": 28.98
+ },
+ {
+  "map": [
+   "       ###   ",
+   "@      #$#   ",
+   "x      ###   ",
+   "   you=@x    ",
+   "x            ",
+   "  stop=#@   @",
+   "win=$        "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 761,
+  "score": 28.96
+ },
+ {
+  "map": [
+   " win=$    ",
+   " ###      ",
+   " #$#     x",
+   " ###    @ ",
+   "   stop=# ",
+   " you=@    ",
+   " o x      ",
+   "          "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 980,
+  "score": 28.95
+ },
+ {
+  "map": [
+   "      @    ",
+   "   stop=#  ",
+   "      you=@",
+   "win=$ ###  ",
+   "      #$#  ",
+   "    n ###  "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 948,
+  "score": 28.95
+ },
+ {
+  "map": [
+   "            ",
+   " win=$      ",
+   "            ",
+   "   kill=~ @ ",
+   "     you=@x ",
+   "        ~~~ ",
+   "  x     ~$~ ",
+   "        ~~~ "
+  ],
+  "par": 9,
+  "changes": 2,
+  "explored": 1598,
+  "score": 28.92
+ },
+ {
+  "map": [
+   "   you=@ ",
+   "         ",
+   " kill=~  ",
+   " you=@x  ",
+   "     win=",
+   "   ~~~   ",
+   " x ~$~   ",
+   "   ~~~  @"
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 69259,
+  "score": 28.54
+ },
+ {
+  "map": [
+   "            ",
+   "     you=@  ",
+   "            ",
+   "   $  win=  ",
+   "            ",
+   "      kill=~",
+   "        @  n",
+   "            "
+  ],
+  "par": 12,
+  "changes": 2,
+  "explored": 77683,
+  "score": 28.12
+ },
+ {
+  "map": [
+   "win=x      ",
+   "   kill=~x ",
+   "  you=@ ~~~",
+   "        ~$~",
+   "        ~~~",
+   "@  @       ",
+   "          ="
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 212,
+  "score": 27.99
+ },
+ {
+  "map": [
+   "      ~~~  ",
+   "#   @ ~$~  ",
+   "      ~~~  ",
+   "win=$      ",
+   "i          ",
+   "  kill=~x  ",
+   "win=x you=@"
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 173,
+  "score": 27.99
+ },
+ {
+  "map": [
+   " you=@   ",
+   " kill=~  ",
+   "   i     ",
+   "    ~~~  ",
+   "    ~$~ i",
+   "    ~~~  ",
+   " @ you=@ ",
+   " win=    "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 126,
+  "score": 27.99
+ },
+ {
+  "map": [
+   "    @       ",
+   "     kill=~x",
+   "      you=@ ",
+   "    ~~~     ",
+   " =  ~$~     ",
+   "    ~~~     ",
+   " win=$      "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 117,
+  "score": 27.99
+ },
+ {
+  "map": [
+   "            ",
+   "    you=@   ",
+   "       ###  ",
+   "       #$#  ",
+   "   @   ###  ",
+   "            ",
+   " sotp=#     ",
+   "   win=     "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 450,
+  "score": 27.98
+ },
+ {
+  "map": [
+   "   ~~~       ",
+   "   ~$~     @ ",
+   "   ~~~       ",
+   "   win=$ x   ",
+   "stop=#       ",
+   " kill=~x     ",
+   "you=@x    ~  "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 468,
+  "score": 27.98
+ },
+ {
+  "map": [
+   "            ",
+   "  win=      ",
+   "=   ###     ",
+   "    #$# @   ",
+   "    ###     ",
+   "   stop=#   ",
+   "  you=@     ",
+   "         i  "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 312,
+  "score": 27.98
+ },
+ {
+  "map": [
+   " ###       ",
+   " #$#   x   ",
+   " ###       ",
+   "  win=$    ",
+   " stop=#    ",
+   "you=@x    @"
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 807,
+  "score": 27.96
+ },
+ {
+  "map": [
+   "~~~      ",
+   "~$~  =   ",
+   "~~~   @  ",
+   " kill=~  ",
+   "   x     ",
+   " you=@   ",
+   "   you=@ ",
+   " n win=  "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 953,
+  "score": 27.95
+ },
+ {
+  "map": [
+   "          @  ",
+   "   you=@     ",
+   "  ~~~ kill=~ ",
+   "  ~$~        ",
+   "~ ~~~        ",
+   "     win=$   ",
+   "           # "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 988,
+  "score": 27.95
+ },
+ {
+  "map": [
+   "    ###    ",
+   "    #$#    ",
+   "    ###    ",
+   "    x win= ",
+   "   sotp=# @",
+   "you=@x     "
+  ],
+  "par": 8,
+  "changes": 2,
+  "explored": 2381,
+  "score": 27.88
+ },
+ {
+  "map": [
+   "  ###      ",
+   "x #$#      ",
+   "  ###  @   ",
+   "you=@ you=@",
+   "    win=x  ",
+   "   stop=#  "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 36,
+  "score": 27
+ },
+ {
+  "map": [
+   "        @",
+   "you=@x   ",
+   "stop=#@  ",
+   "x     ###",
+   "      #$#",
+   " win= ###"
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 52,
+  "score": 27
+ },
+ {
+  "map": [
+   "@ ###    ",
+   "  #$#    ",
+   "  ###    ",
+   "  stop=# ",
+   " you=@ x ",
+   "  win=   ",
+   " you=@   "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 39,
+  "score": 27
+ },
+ {
+  "map": [
+   "           ",
+   "      win= ",
+   "     stop=#",
+   " you=@     ",
+   "   $       ",
+   "    o      ",
+   "          @",
+   "         @ "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 93,
+  "score": 27
+ },
+ {
+  "map": [
+   " sotp=#   ",
+   " win=     ",
+   "  you=@ @ ",
+   " you=@    ",
+   "     ###  ",
+   "  x  #$#  ",
+   "     ###  "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 91,
+  "score": 27
+ },
+ {
+  "map": [
+   "win=$  x     ",
+   " # ###       ",
+   "n  #$#       ",
+   "   ### stop=#",
+   "             ",
+   "      @      ",
+   "        you=@"
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 152,
+  "score": 26.99
+ },
+ {
+  "map": [
+   "win= @  x",
+   "   ###   ",
+   "   #$#   ",
+   "   ###   ",
+   "you=@x   ",
+   " sotp=#  "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 190,
+  "score": 26.99
+ },
+ {
+  "map": [
+   "     ### ",
+   "     #$# ",
+   "     ### ",
+   "        @",
+   "   you=@ ",
+   "  win=   ",
+   "sotp=#   ",
+   "         "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 155,
+  "score": 26.99
+ },
+ {
+  "map": [
+   "   stop=#",
+   "  @ you=@",
+   "   you=@ ",
+   "         ",
+   "  ###    ",
+   "  #$#    ",
+   "# ###    ",
+   "   win= #"
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 202,
+  "score": 26.99
+ },
+ {
+  "map": [
+   "     @    ",
+   " you=@    ",
+   "you=@x    ",
+   " x        ",
+   "      $   ",
+   "  win=    ",
+   "          "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 392,
+  "score": 26.98
+ },
+ {
+  "map": [
+   "@  stop=#",
+   "kill=~x  ",
+   "   you=@ ",
+   "  #  @   ",
+   "      ~~~",
+   "      ~$~",
+   "      ~~~",
+   "   win=$ "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 491,
+  "score": 26.98
+ },
+ {
+  "map": [
+   "           ",
+   "           ",
+   "           ",
+   "   x    ###",
+   "        #$#",
+   "  win=  ###",
+   "@  you=@x  ",
+   "     sotp=#"
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 488,
+  "score": 26.98
+ },
+ {
+  "map": [
+   "    you=@ ~  ",
+   "             ",
+   "    kill=~   ",
+   " ~~~      @  ",
+   " ~$~  win=$  ",
+   " ~~~         "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 434,
+  "score": 26.98
+ },
+ {
+  "map": [
+   " x    n   ",
+   "  you=@x  ",
+   " kill=~   ",
+   "   ~~~ #  ",
+   "   ~$~ @  ",
+   "   ~~~    ",
+   "  win=$   "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 671,
+  "score": 26.97
+ },
+ {
+  "map": [
+   "       @  ",
+   "          ",
+   "  stop=#  ",
+   " @  you=@ ",
+   "      ### ",
+   "      #$# ",
+   "      ### ",
+   "    win=x "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 699,
+  "score": 26.97
+ },
+ {
+  "map": [
+   "   ~~~    ",
+   "   ~$~    ",
+   "   ~~~    ",
+   " you=@    ",
+   "n    win=$",
+   " @ you=@  ",
+   " kill=~x  "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 531,
+  "score": 26.97
+ },
+ {
+  "map": [
+   " sotp=#   ",
+   "    win=x ",
+   "you=@  o  ",
+   "    ###   ",
+   "    #$# @ ",
+   "    ###   ",
+   "        ~ "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 780,
+  "score": 26.96
+ },
+ {
+  "map": [
+   "    stop=#",
+   " win=$    ",
+   "@      ###",
+   " you=@ #$#",
+   "       ###",
+   " you=@    "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 1014,
+  "score": 26.95
+ },
+ {
+  "map": [
+   "x   you=@x  ",
+   "         @  ",
+   "            ",
+   " stop=# ### ",
+   "@       #$# ",
+   "        ### ",
+   "       win=$",
+   "            "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 1498,
+  "score": 26.93
+ },
+ {
+  "map": [
+   "             ",
+   "  you=@    $ ",
+   "  ~~~      @ ",
+   "  ~$~  kill=~",
+   "  ~~~       @",
+   "  win=       "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 1609,
+  "score": 26.92
+ },
+ {
+  "map": [
+   "kill=~   ",
+   " you=@x  ",
+   " sotp=#  ",
+   "      x  ",
+   "     ### ",
+   "win= #$# ",
+   "@    ### "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 1591,
+  "score": 26.92
+ },
+ {
+  "map": [
+   "    = win=   ",
+   "     you=@x  ",
+   "  kill=~     ",
+   "kill=~x      ",
+   "   x         ",
+   "~~~    @     ",
+   "~$~   i      ",
+   "~~~          "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 2100,
+  "score": 26.89
+ },
+ {
+  "map": [
+   "   win=$     ",
+   "        ###  ",
+   "        #$#  ",
+   " stop=# ###  ",
+   "    x        ",
+   "@     you=@x "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 3622,
+  "score": 26.82
+ },
+ {
+  "map": [
+   " @   @    ",
+   "      x   ",
+   "   sotp=# ",
+   "          ",
+   "###       ",
+   "#$# win=$ ",
+   "###       ",
+   "you=@x    "
+  ],
+  "par": 7,
+  "changes": 2,
+  "explored": 3693,
+  "score": 26.82
+ }
+]

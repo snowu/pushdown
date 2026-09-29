@@ -25,18 +25,22 @@ you=@   win=$        push the letters around and you rewrite the physics.
 |---|---|
 | `pushdown.html` | **the game.** Built artifact, committed so it's ready to play. |
 | `engine.js` | parser, step function and BFS solver (~150 lines, no dependencies) |
-| `levels.js` | the 12 levels, as plain strings |
+| `levels.js` | 12 designed levels + 3 *apocrypha*, as plain strings |
 | `src/game.html` | the page template: letterpress art, sound, editor |
 | `build.js` | solves every level, records its par, inlines everything into `pushdown.html` |
 | `check.js` | `node check.js [n] [-v]`: solve levels, print par and state counts |
 | `trace.js` | `node trace.js n`: print the solver's solution frame by frame |
-| `e2e.js` | plays every level in headless Chrome through real key presses |
+| `e2e.js` | plays every level in headless Chrome through real key presses, plus an editor round-trip |
+| `miner.js` | the level miner: random boards → solver → ranked by how often the laws change |
 | `drafts/` | candidate levels and scratch tools |
 
 ```sh
 node build.js          # verify + rebuild pushdown.html
 node check.js -v       # every level, with solutions
 node trace.js 4        # watch the solver solve "glue"
+node miner.js 120 12   # mine for 2 minutes on 12 cores → drafts/mined.json
+MODE=tiny node miner.js 120 12   # minimalist boards → drafts/mined-tiny.json
+FILE=./mined-tiny.json node drafts/show.js 0 1 2   # view finds at the moments the laws change
 PUPPETEER_DIR=/path/to/node_modules node e2e.js   # needs puppeteer-core + chromium
 ```
 
@@ -56,13 +60,19 @@ Some things the grammar implies that I didn't plan:
 - Pushing the last letter out of a sentence vertically puts *you* in its place. You become the new last letter.
 - Breaking a sentence frees its letters as live objects. Break a second `you=@` and its `@` wakes up as a new body, wherever it was ("spare body").
 
+## Apocrypha: levels nobody designed
+
+`miner.js` generates random boards from puzzle-shaped templates, solves each one, and scores it. The first scoring rule (count how many times the laws change along the shortest solution) found boards that were technically deep and humanly meaningless: Rube Goldberg chains like `you==@=` → `win=tp#`. Rewarding **tiny boards with few pieces and long solutions** worked much better. That's the old Sokoban-minimalism instinct.
+
+The three apocrypha after level 12 came out of that minimalist run. One of them, *exchange*, is a working version of the "abdication" finale I failed to build by hand: you shuffle the identity back and forth between `you=x@` and `you=@@` until a loose `@` is both you and win. The game presents them honestly: no one designed them, so there's no intended solution, only the solver's proof that one exists.
+
 ## Art direction
 
 Letterpress. The board is the iron bed of a press, and every character is a block of wooden type that slides when pushed. A live sentence sits in a brass composing stick, inked by what it means: ochre for you, viridian for win, ultramarine for stop, vermilion for kill. You are cast in brass, solid things are lead, and deadly things are red lacquer. Solving a level pulls a paper proof of the final bed. Sounds (wood knocks, a bell when a sentence forms, the press coming down) are synthesized with Web Audio. Type is Alfa Slab One and Courier Prime (both SIL OFL), vendored in `fonts/` and inlined at build time.
 
 ## Ideas not yet done
 
-- **A level miner**: generate random small boards, solve them, and rank by how many times the rules change along the shortest solution (a rough measure of "insight").
+- Better miner taste: penalize solutions whose law changes cancel out (break a rule, re-form the same rule), and reward boards where the *obvious* first move is a trap.
 - Vertical sentences (read top to bottom), which would make every letter a potential crossword.
 - More keys: `push`, `swap`, `sink`, or `is`, which would let a sentence rename a character.
-- A finale built on "abdication": slide the `@` out of your own `you=x@` into `win=`, so the thing you were becomes the goal. It doesn't work yet, because glue makes the pusher replace the letter it pushes.
+- A *designed* finale built on "abdication". The miner found a version (apocrypha i), but a hand-made one that teaches it cleanly would be better.

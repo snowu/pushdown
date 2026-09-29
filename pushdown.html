@@ -52,6 +52,8 @@ header { width: min(1040px, 100%); display: flex; align-items: flex-end; gap: 22
 .drawer button:hover { transform: translateY(-2px); }
 .drawer button.done { color: var(--win); }
 .drawer button.cur { background: linear-gradient(160deg, var(--brass-hi), var(--brass) 55%, var(--brass-lo)); box-shadow: inset 0 1px 0 #fff9, inset 0 -2px 0 #0003, 0 2px 0 #6b4c14, 0 0 0 2px var(--ink); }
+.drawer button.mined { background: linear-gradient(160deg, #f1c9b8, #d99a82 55%, #a0604a); color: #5a1408; font-family: var(--mono); font-weight: 700; font-style: italic; }
+.drawer .sep { width: 1px; background: var(--ink); opacity: .35; margin: 3px 4px; }
 .drawer button.wide { width: auto; padding: 0 10px; font-family: var(--mono); font-weight: 700; font-size: 13px; }
 
 /* ---------- layout ---------- */
@@ -586,6 +588,44 @@ const LEVELS = [
       ' stop=#   win=$  ',
     ],
   },
+  // ---- apocrypha: mined by miner.js, not designed ----
+  {
+    title: 'exchange',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      '  @  @ ',
+      ' you=x@',
+      '  win=$',
+      '   =   ',
+      '  #    ',
+    ],
+  },
+  {
+    title: 'understudy',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      '     @ ',
+      '     = ',
+      ' you=x@',
+      '  win=x',
+      '       ',
+    ],
+  },
+  {
+    title: 'the long way round',
+    mined: true,
+    hint: 'nobody designed this. a random search found it and the solver proved it.',
+    map: [
+      ' kill=~',
+      '       ',
+      'win=x  ',
+      'you=@x ',
+      '    @  ',
+      ' =     ',
+    ],
+  },
 ];
 
 
@@ -594,7 +634,7 @@ const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem('pushdown:' + k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem('pushdown:' + k, JSON.stringify(v)); } catch {} },
 };
-const PAR = [8,13,11,13,13,10,12,13,5,15,13,12];
+const PAR = [8,13,11,13,13,10,12,13,5,15,13,12,15,19,23];
 const done = new Set(store.get('done', []));
 let idx = Math.min(store.get('level', 0), LEVELS.length - 1);
 let custom = null;                 // a level from the editor or a share link
@@ -604,6 +644,9 @@ let prevStatements = new Set();  // stick positions last frame
 let prevMeanings = new Set();    // `key=value` sentences last frame
 
 const current = () => custom ?? LEVELS[idx];
+const DESIGNED = LEVELS.some(l => l.mined) ? LEVELS.findIndex(l => l.mined) : LEVELS.length;
+const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+const label = i => (LEVELS[i].mined ? 'Apocrypha ' + ROMAN[i - DESIGNED] : 'No.' + (i + 1));
 
 // ---------------- sound: a small synthesized print shop ----------------
 const sound = {
@@ -654,7 +697,7 @@ function load() {
   const initial = parse(grid).statements;
   prevStatements = new Set(initial.map(sKey));
   prevMeanings = new Set(initial.map(meaning));
-  $('title').innerHTML = custom ? '' : `<small>No.${idx + 1}</small>`;
+  $('title').innerHTML = custom ? '' : `<small>${label(idx)}</small>`;
   $('title').append(lvl.title);
   $('hint').textContent = lvl.hint || '';
   hideSheet();
@@ -667,8 +710,10 @@ function renderDrawer() {
   const bar = $('drawer');
   bar.innerHTML = '';
   LEVELS.forEach((l, i) => {
+    if (i === DESIGNED) { const sep = document.createElement('span'); sep.className = 'sep'; sep.title = 'apocrypha'; bar.append(sep); }
     const b = document.createElement('button');
-    b.textContent = i + 1; b.title = l.title;
+    b.textContent = l.mined ? ROMAN[i - DESIGNED] : i + 1; b.title = l.title + (l.mined ? ' (apocrypha)' : '');
+    if (l.mined) b.classList.add('mined');
     if (done.has(i)) b.classList.add('done');
     if (!custom && i === idx) b.classList.add('cur');
     b.onclick = () => { custom = null; idx = i; store.set('level', idx); closeEditor(); load(); };
@@ -824,13 +869,17 @@ function win() {
   if (!custom) { done.add(idx); store.set('done', [...done]); }
   const par = custom ? null : PAR[idx];
   const last = !custom && idx === LEVELS.length - 1;
+  const endOfBook = !custom && idx === DESIGNED - 1 && DESIGNED < LEVELS.length;
   const note = par == null ? `set in ${moves} moves.` :
     moves <= par ? `set in ${moves} moves: par. the solver couldn't beat you.` :
     `set in ${moves} moves. the solver found a way in ${par}.`;
+  const coda = endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
+    : last ? '<br><br>you have read everything, canon and apocrypha. now open the editor and write your own laws.' : '';
   sound.play('press');
-  showSheet('won', `proof · ${custom ? 'your level' : 'No.' + (idx + 1)}`, last ? 'the end' : 'solved', grid,
-    note + (last ? '<br>you have read everything. now open the editor and write your own laws.' : ''),
-    [...(custom ? [['back to editor', openEditor, true]] : last ? [['open the editor', openEditor, true]] : [['next  ⏎', next, true]]),
+  showSheet('won', `proof · ${custom ? 'your level' : label(idx)}`, endOfBook || last ? 'the end' : 'solved', grid, note + coda,
+    [...(custom ? [['back to editor', openEditor, true]]
+      : endOfBook ? [['read the apocrypha  ⏎', next, true], ['open the editor', openEditor]]
+      : last ? [['open the editor', openEditor, true]] : [['next  ⏎', next, true]]),
      ['replay', load]]);
   renderDrawer();
 }
