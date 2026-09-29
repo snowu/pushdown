@@ -2,6 +2,8 @@
 
 **A typesetting puzzle. The level is the program.**
 
+![pushdown](docs/screenshot.png)
+
 Open `pushdown.html` in a browser. It's one self-contained file with fonts, engine and levels inlined, and it works offline.
 
 ```
