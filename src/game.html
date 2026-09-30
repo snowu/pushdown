@@ -35,9 +35,10 @@ header { width: min(1040px, 100%); display: flex; align-items: flex-end; gap: 22
 .mast em { font-style: normal; color: var(--kill); }
 .tag { font-style: italic; color: var(--ink-soft); font-size: 14px; padding-bottom: 4px; }
 .tag b { font-style: normal; }
-.drawer { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 2px; }
+.drawer { flex-basis: 100%; display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 0 2px; }
+.drawer .gap { flex: 1; }
 .drawer button {
-  width: 34px; height: 34px; border: 0; border-radius: 3px; cursor: pointer; font-family: var(--serif); font-size: 15px;
+  width: 31px; height: 32px; border: 0; border-radius: 3px; cursor: pointer; font-family: var(--serif); font-size: 15px;
   background: linear-gradient(160deg, var(--wood-hi), var(--wood) 55%, var(--wood-lo));
   box-shadow: inset 0 1px 0 #fff6, inset 0 -2px 0 #0003, 0 2px 0 #6d4d2a, 0 3px 5px #0003; color: var(--ink);
   transition: transform .1s;
@@ -383,6 +384,7 @@ const sound = {
 // ---------------- level lifecycle ----------------
 function load() {
   const lvl = current();
+  if (custom?.press == null && location.hash.startsWith('#press=')) window.history.replaceState(null, '', location.pathname);
   grid = toGrid(lvl.map);
   ids = grid.map(row => row.map(ch => (ch === ' ' ? null : nextId++)));
   history = []; moves = 0; over = false; prevLaws = {}; nudges = 0; clearAdvice();
@@ -419,7 +421,15 @@ function renderDrawer() {
     bar.append(b);
   });
   const e = document.createElement('button');
-  e.textContent = 'editor'; e.className = 'wide' + (custom ? ' cur' : '');
+  const gap = document.createElement('span'); gap.className = 'gap'; bar.append(gap);
+  if (EDITION.length) {
+    const t = document.createElement('button');
+    t.textContent = 'today'; t.className = 'wide' + (custom?.press != null ? ' cur' : '');
+    t.title = 'the daily apocryphon: a puzzle printed by the press';
+    t.onclick = () => press(todaysPress());
+    bar.append(t);
+  }
+  e.textContent = 'editor'; e.className = 'wide' + (custom && custom.press == null ? ' cur' : '');
   e.onclick = openEditor;
   bar.append(e);
 }
@@ -513,7 +523,7 @@ function render() {
   prevStatements = now; prevMeanings = after;
 
   renderLaws(parsed);
-  const par = custom ? null : PAR[idx];
+  const par = custom ? custom.par ?? null : PAR[idx];
   const b = custom ? null : best[idx];
   const parText = par == null ? '' : par > 0 ? ` · par ${par}` : ` · <span title="the designer's solution; the solver couldn't prove a shorter one doesn't exist">par ≤${-par}</span>`;
   $('counter').innerHTML = `<b>${moves}</b> moves` + parText + (b != null ? ` · best ${b}` : '');
@@ -648,7 +658,7 @@ function win() {
     done.add(idx); store.set('done', [...done]);
     if (best[idx] == null || moves < best[idx]) { best[idx] = moves; store.set('best', best); }
   }
-  const par = custom ? null : PAR[idx];
+  const par = custom ? custom.par ?? null : PAR[idx];
   const last = !custom && idx === LEVELS.length - 1;
   const endOfBook = !custom && idx === DESIGNED - 1 && DESIGNED < LEVELS.length;
   const endOfVolume = !custom && !endOfBook && idx + 1 < DESIGNED && bookOf(idx + 1) !== bookOf(idx);
@@ -662,8 +672,10 @@ function win() {
   const coda = help + (endOfVolume ? '<br><br>that is the end of book one. in book two, the words learn to stand up.' : endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
     : last ? '<br><br>you have read everything, canon and apocrypha. now open the editor and write your own laws.' : '');
   sound.play('press');
-  showSheet('won', `proof · ${custom ? 'your level' : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
-    [...(custom ? [['back to editor', openEditor, true]]
+  if (custom?.press != null) { const d = store.get('pressDone', []); if (!d.includes(custom.press)) store.set('pressDone', [...d, custom.press]); }
+  showSheet('won', `proof · ${custom ? (custom.press != null ? 'the press, No.' + (custom.press + 1) : 'your level') : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
+    [...(custom?.press != null ? [['print another  ⏎', () => press(), true]]
+      : custom ? [['back to editor', openEditor, true]]
       : endOfBook ? [['read the apocrypha  ⏎', next, true], ['open the editor', openEditor]]
       : last ? [['open the editor', openEditor, true]]
       : endOfVolume ? [['begin book two  ⏎', next, true]] : [['next  ⏎', next, true]]),
@@ -701,6 +713,24 @@ function showSheet(kind, stamp, title, printGrid, html, buttons) {
     row.append(b);
   }
   $('sheet').className = 'sheet show ' + kind; $('veil').className = 'veil show';
+}
+
+// ---------------- the press ----------------
+// An edition of small puzzles, mined offline by edition.js and each proven
+// solvable. One a day; or print another at random.
+const EDITION = /*__EDITION__*/[];
+const EPOCH = Date.UTC(2026, 8, 30);
+const todaysPress = () => { const day = Math.floor((Date.now() - EPOCH) / 864e5); return ((day % EDITION.length) + EDITION.length) % EDITION.length; };
+function press(n = Math.floor(Math.random() * EDITION.length)) {
+  const [map, par] = EDITION[n];
+  const today = n === todaysPress();
+  custom = {
+    title: today ? `today's apocryphon` : `apocryphon No.${n + 1}`,
+    hint: `printed by the press${today ? ' for ' + new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : ''}. nobody designed it; the solver proved it.`,
+    map, par, press: n,
+  };
+  window.history.replaceState(null, '', '#press=' + (n + 1));
+  closeEditor(); load();
 }
 
 function next() { if (idx < LEVELS.length - 1) { idx++; store.set('level', idx); custom = null; load(); } }
@@ -765,12 +795,16 @@ $('bed').addEventListener('touchend', e => {
 addEventListener('resize', () => { layout(); render(); });
 $('soundState').textContent = sound.on ? 'on' : 'off';
 
-if (location.hash.length > 1) {
+const pressLink = location.hash.match(/^#press=(\d+)$/);
+if (pressLink && EDITION[pressLink[1] - 1]) press(pressLink[1] - 1);
+else if (location.hash.length > 1) {
   $('src').value = decodeURIComponent(location.hash.slice(1));
   custom = editorLevel(); custom.title = 'a shared level';
   openEditor();
 }
 document.fonts.ready.then(() => { layout(); render(); });
+// read-only peek for tests and the curious: pushdown.board()
+window.pushdown = { board: () => toLines(grid), level: () => ({ ...current(), map: [...current().map] }) };
 load();
 </script>
 </body>

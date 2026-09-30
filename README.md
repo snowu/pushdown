@@ -35,7 +35,9 @@ you=@   win=$        push the letters around and you rewrite the physics.
 | `check.js` | `node check.js [n] [-v]`: solve levels, print par and state counts |
 | `trace.js` | `node trace.js n`: print the solver's solution frame by frame |
 | `e2e.js` | plays every level in headless Chrome through real key presses, plus an editor round-trip |
-| `miner.js` | the level miner: random boards → solver → ranked by how often the laws change |
+| `miner.js` | the original level miner (big and tiny modes) that found the apocrypha |
+| `press.js` | the press: seeded tiny-board generator + taste function (distinct law-sets visited, par, fewness of pieces) |
+| `edition.js` | `node edition.js 600 12` mines an edition in parallel into `edition.json`; the build ships it as the daily puzzle |
 | `drafts/` | candidate levels and scratch tools |
 
 ```sh
@@ -77,6 +79,12 @@ The solver itself was rewritten along the way. States are kept in one array in B
 `miner.js` generates random boards from puzzle-shaped templates, solves each one, and scores it. The first scoring rule (count how many times the laws change along the shortest solution) found boards that were technically deep and humanly meaningless: Rube Goldberg chains like `you==@=` → `win=tp#`. Rewarding **tiny boards with few pieces and long solutions** worked much better. That's the old Sokoban-minimalism instinct.
 
 The three apocrypha after level 12 came out of that minimalist run. One of them, *exchange*, is a working version of the "abdication" finale I failed to build by hand: you shuffle the identity back and forth between `you=x@` and `you=@@` until a loose `@` is both you and win. The game presents them honestly: no one designed them, so there's no intended solution, only the solver's proof that one exists.
+
+## The press: a puzzle a day
+
+The **today** button opens *today's apocryphon*: a small puzzle from an edition printed offline by `edition.js`. The generator comes from `press.js` and the taste function is simple. It rewards a long shortest solution, many *distinct* law-sets visited along it (breaking and re-forming the same rule doesn't count twice), and few pieces on the board. Every printed puzzle has a proven par. Solving one offers *print another*, and `#press=N` links to a specific puzzle.
+
+Mining live in the browser turned out to be too slow (about 20 s per keeper, because unsolvable boards burn the whole solver budget). Printing the edition offline on 12 cores and shipping it as ~10 KB of data was the better trade. To grow the edition, run `node edition.js <seconds> <workers>`, which merges into `edition.json`, then rebuild.
 
 ## Art direction
 

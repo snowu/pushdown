@@ -33,7 +33,7 @@ for (let i = 0; i < LEVELS.length; i++) {
 await page.goto(url);
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: 'load' });
-await page.click('.drawer button.wide');
+await page.evaluate(() => [...document.querySelectorAll('.drawer button')].find(b => b.textContent === 'editor').click());
 await page.$eval('#src', el => (el.value = ''));
 await page.type('#src', '  @   $\n\nyou=@ win=$');
 await page.click('#solveBtn');
@@ -46,6 +46,23 @@ const edTitle = await page.$eval('#sheetTitle', el => el.textContent);
 const edOk = verdict.startsWith('solvable in 4') && edTitle === 'solved';
 if (!edOk) failed++;
 console.log(`${edOk ? 'ok  ' : 'FAIL'}    editor               "${verdict.slice(0, 40)}…" then played → "${edTitle}"`);
+
+// The press: open today's apocryphon, solve it here, play it there.
+await page.goto(url);
+await page.evaluate(() => localStorage.clear());
+await page.reload({ waitUntil: 'load' });
+const hasPress = await page.evaluate(() => [...document.querySelectorAll('.drawer button')].some(b => b.textContent === 'today'));
+if (hasPress) {
+  await page.evaluate(() => [...document.querySelectorAll('.drawer button')].find(b => b.textContent === 'today').click());
+  const lvl = await page.evaluate(() => window.pushdown.level());
+  const r = par(lvl);
+  for (const m of r.moves) await page.keyboard.press(keys[m]);
+  await page.waitForFunction(() => document.getElementById('sheet').classList.contains('show'), { timeout: 3000 }).catch(() => {});
+  const t = await page.$eval('#sheetTitle', el => el.textContent);
+  const ok = t === 'solved' && r.par === lvl.par;
+  if (!ok) failed++;
+  console.log(`${ok ? 'ok  ' : 'FAIL'}    press                today's apocryphon, par ${lvl.par}, solved in ${r.moves.length} → "${t}"`);
+}
 
 await browser.close();
 if (errors.length) console.log('page errors:', errors);

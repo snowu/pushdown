@@ -42,9 +42,10 @@ header { width: min(1040px, 100%); display: flex; align-items: flex-end; gap: 22
 .mast em { font-style: normal; color: var(--kill); }
 .tag { font-style: italic; color: var(--ink-soft); font-size: 14px; padding-bottom: 4px; }
 .tag b { font-style: normal; }
-.drawer { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 2px; }
+.drawer { flex-basis: 100%; display: flex; gap: 5px; flex-wrap: wrap; padding: 4px 0 2px; }
+.drawer .gap { flex: 1; }
 .drawer button {
-  width: 34px; height: 34px; border: 0; border-radius: 3px; cursor: pointer; font-family: var(--serif); font-size: 15px;
+  width: 31px; height: 32px; border: 0; border-radius: 3px; cursor: pointer; font-family: var(--serif); font-size: 15px;
   background: linear-gradient(160deg, var(--wood-hi), var(--wood) 55%, var(--wood-lo));
   box-shadow: inset 0 1px 0 #fff6, inset 0 -2px 0 #0003, 0 2px 0 #6d4d2a, 0 3px 5px #0003; color: var(--ink);
   transition: transform .1s;
@@ -879,6 +880,7 @@ const sound = {
 // ---------------- level lifecycle ----------------
 function load() {
   const lvl = current();
+  if (custom?.press == null && location.hash.startsWith('#press=')) window.history.replaceState(null, '', location.pathname);
   grid = toGrid(lvl.map);
   ids = grid.map(row => row.map(ch => (ch === ' ' ? null : nextId++)));
   history = []; moves = 0; over = false; prevLaws = {}; nudges = 0; clearAdvice();
@@ -915,7 +917,15 @@ function renderDrawer() {
     bar.append(b);
   });
   const e = document.createElement('button');
-  e.textContent = 'editor'; e.className = 'wide' + (custom ? ' cur' : '');
+  const gap = document.createElement('span'); gap.className = 'gap'; bar.append(gap);
+  if (EDITION.length) {
+    const t = document.createElement('button');
+    t.textContent = 'today'; t.className = 'wide' + (custom?.press != null ? ' cur' : '');
+    t.title = 'the daily apocryphon: a puzzle printed by the press';
+    t.onclick = () => press(todaysPress());
+    bar.append(t);
+  }
+  e.textContent = 'editor'; e.className = 'wide' + (custom && custom.press == null ? ' cur' : '');
   e.onclick = openEditor;
   bar.append(e);
 }
@@ -1009,7 +1019,7 @@ function render() {
   prevStatements = now; prevMeanings = after;
 
   renderLaws(parsed);
-  const par = custom ? null : PAR[idx];
+  const par = custom ? custom.par ?? null : PAR[idx];
   const b = custom ? null : best[idx];
   const parText = par == null ? '' : par > 0 ? ` · par ${par}` : ` · <span title="the designer's solution; the solver couldn't prove a shorter one doesn't exist">par ≤${-par}</span>`;
   $('counter').innerHTML = `<b>${moves}</b> moves` + parText + (b != null ? ` · best ${b}` : '');
@@ -1144,7 +1154,7 @@ function win() {
     done.add(idx); store.set('done', [...done]);
     if (best[idx] == null || moves < best[idx]) { best[idx] = moves; store.set('best', best); }
   }
-  const par = custom ? null : PAR[idx];
+  const par = custom ? custom.par ?? null : PAR[idx];
   const last = !custom && idx === LEVELS.length - 1;
   const endOfBook = !custom && idx === DESIGNED - 1 && DESIGNED < LEVELS.length;
   const endOfVolume = !custom && !endOfBook && idx + 1 < DESIGNED && bookOf(idx + 1) !== bookOf(idx);
@@ -1158,8 +1168,10 @@ function win() {
   const coda = help + (endOfVolume ? '<br><br>that is the end of book one. in book two, the words learn to stand up.' : endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
     : last ? '<br><br>you have read everything, canon and apocrypha. now open the editor and write your own laws.' : '');
   sound.play('press');
-  showSheet('won', `proof · ${custom ? 'your level' : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
-    [...(custom ? [['back to editor', openEditor, true]]
+  if (custom?.press != null) { const d = store.get('pressDone', []); if (!d.includes(custom.press)) store.set('pressDone', [...d, custom.press]); }
+  showSheet('won', `proof · ${custom ? (custom.press != null ? 'the press, No.' + (custom.press + 1) : 'your level') : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
+    [...(custom?.press != null ? [['print another  ⏎', () => press(), true]]
+      : custom ? [['back to editor', openEditor, true]]
       : endOfBook ? [['read the apocrypha  ⏎', next, true], ['open the editor', openEditor]]
       : last ? [['open the editor', openEditor, true]]
       : endOfVolume ? [['begin book two  ⏎', next, true]] : [['next  ⏎', next, true]]),
@@ -1197,6 +1209,24 @@ function showSheet(kind, stamp, title, printGrid, html, buttons) {
     row.append(b);
   }
   $('sheet').className = 'sheet show ' + kind; $('veil').className = 'veil show';
+}
+
+// ---------------- the press ----------------
+// An edition of small puzzles, mined offline by edition.js and each proven
+// solvable. One a day; or print another at random.
+const EDITION = [[["@ ~ @"," you=@","you=@"," win=$","     n"],16],[[" n  x","you=@ ="," you=@","win=  @"],11],[["   $"," win=$","   n","you=@"," kill=~"," @"],16],[["win=$ #","","","you=@","  #","@"],24],[[" @   @","  you=@x","   win=","  kill=x",""],20],[["@    =","","you=x@"," win=x","  i"],22],[["","stop=#"," you=@x","  @","   o","win="],23],[["  @     n","","  you=x@","   kill=~"," n"," win="],21],[["   n","=","you=@"," win=$","kill=x","    @"],21],[["win=$","","you=@","","  o i","  @ o"],21],[["win=$","#    @"," kill=x","you=@",""],19],[["","  x","stop=@","you=x@","  win=$","@"],16],[[" win=","x  @","you=@x"," #","","    i"],23],[["win=$","x n",""," you=@x","","@"],23],[[""," o      o"," you=x@ @","   win= @"],20],[[" win=","  you=@","kill=~","   i  @"],24],[["  @","  n @","stop=#"," win=","you=@",""],18],[["win=","  n"," kill=~","you=x@","","  @"],19],[["","  win=","   i","you=@"," you=@","    @"],15],[[" o    n","  win=x"," you=x@","","     @"],28],[["  n","~","you=@","kill=~","     @","win=$"],23],[["win=x","     =","stop=#","   you=@","   @   o",""],22],[["you=@"," you=@","  win=","    @ x"],20],[[" # #"," win=x","you=x@","    @","stop=#",""],17],[["","   win=$","  you=@x","","  @","       x"],21],[["","@ #","   n","win=x","you=@x",""],17],[[" win=","kill=~"," @","      #"," you=@x"],24],[["win= ~"," kill=x","  you=x@","@"," =     $"],25],[["      o"," @","you=@","win= o","",""],26],[["  #","you=@x #","  win=$","  kill=~","  @"],15],[["     =","     ="," you=@","      @","win=x"],20],[["  x @"," win=","stop=#","you=x@","","$   x"],16],[["      #","   #"," you=x@","","  @","win="],28],[["   @","#    $","kill=x","","you=@"," win="],21],[["win=x",""," you=@","stop=#","      o","     @"],19],[["       @","win=x #","  you=@x","  ~",""," kill=x"],25],[["   win=","   = @"," @","you=@ @"],23],[["   x"," kill=~"," you=x@","      @"," win=$"],21],[[" win=","~  x","@    #","you=x@",""],21],[["       @","","    $   o"," you=@","   $","win=x"],23],[["","stop=# @","  you=@x"," = win=",""],23],[["win=","x","you=x@","  @","  i",""],20],[["  @","   n o","stop=#","you=@","win="],20],[["=","@ win=x"," stop=#","you=@",""],17],[[" you=@"," ="," win=$","  @ ="],21],[["you=@x"," win=x o","kill=~"," @  n"],23],[["win=","   ~ @"," you=@","  ~   $","",""],28],[[" win=x","    = ="," you=@x","      i @"],21],[["=   o","","=  you=x@","   win=","  @"],20],[["     @","  n","kill=~","","you=@"," win="],19],[["win= @","   n","  you=x@","","       x",""],20],[["  you=@"," win=$","@ you=@"," x $ n"],22],[["win=$","     @","     o","you=x@"," stop=#",""],19],[["n   @","you=@x","  =","     x","kill=~","  win="],21],[["win=","@    #"," you=x@"," ~  x"],26],[["kill=x","","  $ =","win="," you=@"," $   @"],21],[["  x  @","  win=","you=@x","o     @"],12],[["    ="," kill=x"," you=x@","","  @","win="],16],[["  win=$","      x","n you=x@","       #","   @"],23],[["","@  kill=x","   you=@x","","   o","   win=$"],20],[["","you=@x","i win=","","x     @"],19],[["win=  @","","     i",""," you=@","you=x@"],24],[["","you=@","you=x@","   @","     ~","  win="],16],[[""," i    @","you=@x"," i    #","stop=#","win=$"],23],[["#   @ @","","   you=@x","    win=","o kill=x",""],17],[["    @","@  win=","stop=#","you=@x","",""],25],[["","","you=x@ x","win=$"," i     @"],20],[["    i  i"," you=x@","       i","","","@ win="],21],[["  win=","@     i","   kill=~","    you=@",""],22],[["     @ i"," you=@ ="," stop=#","win=$  o"],23],[[" win=","","you=x@","   @ i"," x"],25],[["you=@x"," you=@ n","     @"," $     ~","win=x"],24],[[" win=","   @ x","stop=@","you=@x","   o"],17],[["win="," you=@","   #","kill=~","    @"],20],[[" win=","   you=@x","    $   =","","   @    $"],21],[[" i   @"," you=@x","    = i","win=$"],29],[["    o","you=x@","x    @"," #","win="],26],[["     o","~","","  you=@x"," @  win=x","       n"],19],[["        ~","   x   @","you=@x","win=$",""],21],[["n win="," you=@x"," n    ~","   @"],23],[[" win=","kill=x","you=x@","  = n ~","@"],24],[["    # @","   win="," you=@","you=@"],22],[["      ~","    ~","you=@"," @"," win=x"],24],[["win=x"," i i  #"," kill=~","  you=@x","      @"],28],[[" n","win=x","you=@x","   o"," @  #"],24],[[" you=@","@ win=","stop=#","$ x   o"],25],[[" you=@","kill=~","     =","    @","win=x"," i   n"],23],[[" win= @"," n    x","  you=@x","","",""],26],[["","","you=@x","kill=~","# @"," win= #"],21],[["you=x@","  you=@"," win=","  @  i"],22],[["win=","  you=x@","   x n","~ @"],22],[["     n @","@ you=x@","   win=x","       o"],24],[["=   win=","you=@ @","   you=@",""],19],[["  win=","  #","you=@x","stop=#","#  @"],24],[["   @"," win=$","kill=~","you=@","=","  $"],19],[["stop=#","   @ @ ="," you=@","      $"," win="],22]];
+const EPOCH = Date.UTC(2026, 8, 30);
+const todaysPress = () => { const day = Math.floor((Date.now() - EPOCH) / 864e5); return ((day % EDITION.length) + EDITION.length) % EDITION.length; };
+function press(n = Math.floor(Math.random() * EDITION.length)) {
+  const [map, par] = EDITION[n];
+  const today = n === todaysPress();
+  custom = {
+    title: today ? `today's apocryphon` : `apocryphon No.${n + 1}`,
+    hint: `printed by the press${today ? ' for ' + new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : ''}. nobody designed it; the solver proved it.`,
+    map, par, press: n,
+  };
+  window.history.replaceState(null, '', '#press=' + (n + 1));
+  closeEditor(); load();
 }
 
 function next() { if (idx < LEVELS.length - 1) { idx++; store.set('level', idx); custom = null; load(); } }
@@ -1261,12 +1291,16 @@ $('bed').addEventListener('touchend', e => {
 addEventListener('resize', () => { layout(); render(); });
 $('soundState').textContent = sound.on ? 'on' : 'off';
 
-if (location.hash.length > 1) {
+const pressLink = location.hash.match(/^#press=(\d+)$/);
+if (pressLink && EDITION[pressLink[1] - 1]) press(pressLink[1] - 1);
+else if (location.hash.length > 1) {
   $('src').value = decodeURIComponent(location.hash.slice(1));
   custom = editorLevel(); custom.title = 'a shared level';
   openEditor();
 }
 document.fonts.ready.then(() => { layout(); render(); });
+// read-only peek for tests and the curious: pushdown.board()
+window.pushdown = { board: () => toLines(grid), level: () => ({ ...current(), map: [...current().map] }) };
 load();
 </script>
 </body>

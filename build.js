@@ -1,6 +1,6 @@
 // node build.js — verify every level with the solver, then inline everything
 // into a single self-contained pushdown.html you can just double-click.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { LEVELS } from './levels.js';
 import { par } from './par.js';
 
@@ -14,12 +14,20 @@ const fonts = JSON.parse(readFileSync('fonts/fonts.json', 'utf8')).map(([family,
   `@font-face { font-family: '${family}'; font-style: ${style}; font-weight: ${weight}; font-display: swap;
   src: url(data:font/woff2;base64,${readFileSync('fonts/' + file).toString('base64')}) format('woff2'); }`).join('\n');
 
+// The press edition: shipped as [map, par] pairs, shuffled so difficulty varies day to day.
+const edition = existsSync('edition.json') ? JSON.parse(readFileSync('edition.json', 'utf8')) : [];
+const hash = str => { let h = 2166136261; for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+const EDITION = edition.filter(e => e.par <= 30).slice(0, 366)
+  .sort((a, b) => hash(a.map.join('/')) - hash(b.map.join('/')))
+  .map(e => [e.map, e.par]);
+
 const strip = src => src.replace(/^import .*$/gm, '').replace(/^export /gm, '');
 const html = readFileSync('src/game.html', 'utf8')
   .replace('/*__FONTS__*/', () => fonts)
   .replace('/*__ENGINE__*/', () => strip(readFileSync('engine.js', 'utf8')))
   .replace("/*__ENGINE_SRC__*/''", () => JSON.stringify(strip(readFileSync('engine.js', 'utf8'))).replace(/<\//g, '<\\/'))
   .replace('/*__LEVELS__*/', () => strip(readFileSync('levels.js', 'utf8')))
-  .replace('/*__PARS__*/[]', JSON.stringify(pars));
+  .replace('/*__PARS__*/[]', JSON.stringify(pars))
+  .replace('/*__EDITION__*/[]', () => JSON.stringify(EDITION));
 writeFileSync('pushdown.html', html);
-console.log(`built pushdown.html — ${LEVELS.length} levels, pars ${pars.map(p => (p < 0 ? '≤' + -p : p)).join(' ')}`);
+console.log(`built pushdown.html — ${LEVELS.length} levels, ${EDITION.length} in the press edition, pars ${pars.map(p => (p < 0 ? '≤' + -p : p)).join(' ')}`);
