@@ -18,6 +18,7 @@ const strip = src => src.replace(/^import .*$/gm, '').replace(/^export /gm, '');
 const html = readFileSync('src/game.html', 'utf8')
   .replace('/*__FONTS__*/', () => fonts)
   .replace('/*__ENGINE__*/', () => strip(readFileSync('engine.js', 'utf8')))
+  .replace("/*__ENGINE_SRC__*/''", () => JSON.stringify(strip(readFileSync('engine.js', 'utf8'))).replace(/<\//g, '<\\/'))
   .replace('/*__LEVELS__*/', () => strip(readFileSync('levels.js', 'utf8')))
   .replace('/*__PARS__*/[]', JSON.stringify(pars));
 writeFileSync('pushdown.html', html);

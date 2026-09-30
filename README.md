@@ -48,6 +48,8 @@ FILE=./mined-tiny.json node drafts/show.js 0 1 2   # view finds at the moments t
 PUPPETEER_DIR=/path/to/node_modules node e2e.js   # needs puppeteer-core + chromium
 ```
 
+Press **`?`** to ask *the compositor*. It runs the solver from your current position in a Web Worker and either nudges you with the next move (and how many remain), or tells you plainly that the position is lost and you should undo. Nudges are noted on the proof.
+
 The in-game **editor** lets you type a level, play it, ask the solver whether it's possible, and copy a share link (the level is stored in the URL hash).
 
 ## Design notes: the solver as a co-designer
