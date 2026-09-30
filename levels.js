@@ -118,6 +118,21 @@ export const LEVELS = [
     ],
   },
   {
+    title: 'stand-in',
+    hint: 'what becomes of a letter pushed out of its sentence?',
+    map: [
+      '             ',
+      '  @          ',
+      ' you=@       ',
+      ' #### ###### ',
+      ' #         # ',
+      ' #      $  # ',
+      ' ########### ',
+      '             ',
+      'stop=#  win=$',
+    ],
+  },
+  {
     title: 'typo',
     hint: '',
     map: [

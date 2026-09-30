@@ -51,6 +51,18 @@ header { width: min(1040px, 100%); display: flex; align-items: flex-end; gap: 22
 }
 .drawer button:hover { transform: translateY(-2px); }
 .drawer button.done { color: var(--win); }
+.drawer button { position: relative; }
+.drawer button.par::after { /* a brass rivet: solved at par */
+  content: ''; position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--brass-hi), var(--brass-lo)); box-shadow: 0 0 0 1px #0004;
+}
+.blk.inked > span { animation: inked .55s cubic-bezier(.3,1.6,.5,1); }
+@keyframes inked { 0% { transform: scale(1.35); filter: brightness(1.6) saturate(1.6); } 100% { transform: none; } }
+.blk.inked { animation: press .35s ease-out; }
+@keyframes press { 0% { filter: brightness(1.25); } 100% { filter: none; } }
+.laws li.changed { animation: lawflash 1.1s ease-out; }
+@keyframes lawflash { 0% { background: #f6dd8e; box-shadow: 0 0 0 6px #f6dd8e; } 100% { background: #f6dd8e00; box-shadow: 0 0 0 6px #f6dd8e00; } }
+.laws li.gone { opacity: .45; text-decoration: line-through; }
 .drawer button.cur { background: linear-gradient(160deg, var(--brass-hi), var(--brass) 55%, var(--brass-lo)); box-shadow: inset 0 1px 0 #fff9, inset 0 -2px 0 #0003, 0 2px 0 #6b4c14, 0 0 0 2px var(--ink); }
 .drawer button.mined { background: linear-gradient(160deg, #f1c9b8, #d99a82 55%, #a0604a); color: #5a1408; font-family: var(--mono); font-weight: 700; font-style: italic; }
 .drawer .sep { width: 1px; background: var(--ink); opacity: .35; margin: 3px 4px; }
@@ -546,6 +558,21 @@ const LEVELS = [
     ],
   },
   {
+    title: 'stand-in',
+    hint: 'what becomes of a letter pushed out of its sentence?',
+    map: [
+      '             ',
+      '  @          ',
+      ' you=@       ',
+      ' #### ###### ',
+      ' #         # ',
+      ' #      $  # ',
+      ' ########### ',
+      '             ',
+      'stop=#  win=$',
+    ],
+  },
+  {
     title: 'typo',
     hint: '',
     map: [
@@ -634,8 +661,10 @@ const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem('pushdown:' + k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem('pushdown:' + k, JSON.stringify(v)); } catch {} },
 };
-const PAR = [8,13,11,13,13,10,12,13,5,15,13,12,15,19,23];
+const PAR = [8,13,11,13,13,10,12,13,5,9,15,13,12,15,19,23];
 const done = new Set(store.get('done', []));
+const best = store.get('best', {});   // level index -> fewest moves
+let prevLaws = {};                    // key -> 'chars' last frame, for the laws panel
 let idx = Math.min(store.get('level', 0), LEVELS.length - 1);
 let custom = null;                 // a level from the editor or a share link
 let grid, ids, history, moves, over = false;
@@ -693,7 +722,7 @@ function load() {
   const lvl = current();
   grid = toGrid(lvl.map);
   ids = grid.map(row => row.map(ch => (ch === ' ' ? null : nextId++)));
-  history = []; moves = 0; over = false;
+  history = []; moves = 0; over = false; prevLaws = {};
   const initial = parse(grid).statements;
   prevStatements = new Set(initial.map(sKey));
   prevMeanings = new Set(initial.map(meaning));
@@ -715,6 +744,7 @@ function renderDrawer() {
     b.textContent = l.mined ? ROMAN[i - DESIGNED] : i + 1; b.title = l.title + (l.mined ? ' (apocrypha)' : '');
     if (l.mined) b.classList.add('mined');
     if (done.has(i)) b.classList.add('done');
+    if (best[i] != null && best[i] <= PAR[i]) { b.classList.add('par'); b.title += ' · solved at par'; }
     if (!custom && i === idx) b.classList.add('cur');
     b.onclick = () => { custom = null; idx = i; store.set('level', idx); closeEditor(); load(); };
     bar.append(b);
@@ -799,13 +829,19 @@ function render() {
 
   // sound: which sentences appeared or vanished (ignoring mere sliding)
   const after = new Set(parsed.statements.map(meaning));
-  const formed = parsed.statements.find(s => !prevMeanings.has(meaning(s)));
+  const fresh = parsed.statements.filter(s => !prevMeanings.has(meaning(s)));
+  const formed = fresh[0];
+  for (const s of fresh) for (let c = s.c; c < s.c + s.len; c++) {
+    const el = blocks.get(ids[s.r][c]);
+    if (el) { el.classList.remove('inked'); void el.offsetWidth; el.classList.add('inked'); }
+  }
   const broke = [...prevMeanings].some(m => !after.has(m));
   prevStatements = now; prevMeanings = after;
 
   renderLaws(parsed);
   const par = custom ? null : PAR[idx];
-  $('counter').innerHTML = `<b>${moves}</b> moves` + (par ? ` · par ${par}` : '');
+  const b = custom ? null : best[idx];
+  $('counter').innerHTML = `<b>${moves}</b> moves` + (par ? ` · par ${par}` : '') + (b != null ? ` · best ${b}` : '');
   return { formed, broke };
 }
 
@@ -813,15 +849,27 @@ function renderLaws(parsed) {
   const ul = $('laws');
   ul.innerHTML = '';
   const words = { you: 'are you', win: 'win', stop: 'are solid', kill: 'kill' };
+  const now = Object.fromEntries(KEYS.map(k => [k, [...parsed.rules[k]].join('')]));
+  const first = !Object.keys(prevLaws).length;
   for (const k of KEYS) {
-    if (!parsed.rules[k].size) continue;
+    if (!parsed.rules[k].size) {
+      if (prevLaws[k]) { // a law that just died: show it struck through, briefly
+        const li = document.createElement('li'); li.className = 'gone';
+        li.innerHTML = `<span class="g"></span><span class="k-${k}"></span>`;
+        li.children[0].textContent = prevLaws[k]; li.children[1].textContent = words[k];
+        ul.append(li);
+      }
+      continue;
+    }
     const li = document.createElement('li');
+    if (!first && prevLaws[k] !== now[k]) li.className = 'changed';
     const g = document.createElement('span'); g.className = 'g';
     for (const ch of parsed.rules[k]) { const i = document.createElement('i'); i.textContent = ch; g.append(i); }
     const w = document.createElement('span'); w.className = 'k-' + k; w.textContent = words[k];
     li.append(g, w); ul.append(li);
   }
   if (!ul.children.length) ul.innerHTML = '<li class="none">no laws. nothing matters.</li>';
+  prevLaws = now;
 }
 
 // ---------------- play ----------------
@@ -866,7 +914,10 @@ function undo() {
 
 function win() {
   over = true;
-  if (!custom) { done.add(idx); store.set('done', [...done]); }
+  if (!custom) {
+    done.add(idx); store.set('done', [...done]);
+    if (best[idx] == null || moves < best[idx]) { best[idx] = moves; store.set('best', best); }
+  }
   const par = custom ? null : PAR[idx];
   const last = !custom && idx === LEVELS.length - 1;
   const endOfBook = !custom && idx === DESIGNED - 1 && DESIGNED < LEVELS.length;
