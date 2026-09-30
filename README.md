@@ -2,6 +2,8 @@
 
 **A typesetting puzzle. The level is the program.**
 
+![the solver playing "glue": push `win=$` into the ring and the walls become the goal](docs/demo.gif)
+
 ![pushdown](docs/screenshot.png)
 
 Open `pushdown.html` in a browser. It's one self-contained file with fonts, engine and levels inlined, and it works offline.
@@ -34,6 +36,7 @@ you=@   win=$        push the letters around and you rewrite the physics.
 | `build.js` | solves every level, records its par, inlines everything into `pushdown.html` |
 | `check.js` | `node check.js [n] [-v]`: solve levels, print par and state counts |
 | `trace.js` | `node trace.js n`: print the solver's solution frame by frame |
+| `record.js` | `node record.js 4 docs/demo.gif` — the solver plays a level in headless Chrome, recorded as a GIF |
 | `e2e.js` | plays every level in headless Chrome through real key presses, plus an editor round-trip |
 | `miner.js` | the original level miner (big and tiny modes) that found the apocrypha |
 | `press.js` | the press: seeded tiny-board generator + taste function (distinct law-sets visited, par, fewness of pieces) |
@@ -84,7 +87,7 @@ The three apocrypha after level 12 came out of that minimalist run. One of them,
 
 The **today** button opens *today's apocryphon*: a small puzzle from an edition printed offline by `edition.js`. The generator comes from `press.js` and the taste function is simple. It rewards a long shortest solution, many *distinct* law-sets visited along it (breaking and re-forming the same rule doesn't count twice), and few pieces on the board. Every printed puzzle has a proven par. Solving one offers *print another*, and `#press=N` links to a specific puzzle.
 
-Mining live in the browser turned out to be too slow (about 20 s per keeper, because unsolvable boards burn the whole solver budget). Printing the edition offline on 12 cores and shipping it as ~10 KB of data was the better trade. To grow the edition, run `node edition.js <seconds> <workers>`, which merges into `edition.json`, then rebuild.
+Mining live in the browser turned out to be too slow (about 20 s per keeper, because unsolvable boards burn the whole solver budget). Printing the edition offline on 12 cores and shipping it as data (currently 199 puzzles, ~20 KB) was the better trade. To grow the edition, run `node edition.js <seconds> <workers>`, which merges into `edition.json`, then rebuild.
 
 ## Art direction
 

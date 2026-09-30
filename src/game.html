@@ -217,6 +217,7 @@ kbd { font: inherit; font-weight: 700; border: 1.5px solid var(--ink); border-ra
 .pad { display: none; grid-template-columns: repeat(3, 58px); gap: 8px; justify-content: center; }
 .pad button { height: 48px; border: 2px solid var(--ink); background: #f4ecda; box-shadow: 3px 3px 0 var(--ink); font-size: 18px; font-weight: 700; }
 @media (pointer: coarse) { .pad { display: grid; } }
+@media (max-width: 520px) { .bed { padding: 12px 8px; border-radius: 8px; } body { padding: 18px 12px 30px; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: 0s !important; }
 }
@@ -443,8 +444,9 @@ const meaning = s => `${s.key}=${s.value}`;
 
 function layout() {
   const H = grid.length, W = grid[0].length;
-  const avail = $('bed').clientWidth - 52;
-  cs = Math.max(20, Math.min(58, Math.floor(avail / W), Math.floor((innerHeight * .62) / H)));
+  const bs = getComputedStyle($('bed'));
+  const avail = $('bed').clientWidth - parseFloat(bs.paddingLeft) - parseFloat(bs.paddingRight);
+  cs = Math.max(16, Math.min(58, Math.floor(avail / W), Math.floor((innerHeight * .62) / H)));
   const board = $('board');
   board.style.width = W * cs + 'px'; board.style.height = H * cs + 'px';
   board.querySelectorAll('.slot').forEach(s => s.remove());
@@ -672,8 +674,14 @@ function win() {
   const coda = help + (endOfVolume ? '<br><br>that is the end of book one. in book two, the words learn to stand up.' : endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
     : last ? '<br><br>you have read everything, canon and apocrypha. now open the editor and write your own laws.' : '');
   sound.play('press');
-  if (custom?.press != null) { const d = store.get('pressDone', []); if (!d.includes(custom.press)) store.set('pressDone', [...d, custom.press]); }
-  showSheet('won', `proof · ${custom ? (custom.press != null ? 'the press, No.' + (custom.press + 1) : 'your level') : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
+  let pressNote = '';
+  if (custom?.press != null) {
+    const d = store.get('pressDone', []);
+    if (!d.includes(custom.press)) d.push(custom.press);
+    store.set('pressDone', d);
+    pressNote = `<br><br>you have solved ${d.length} of the ${EDITION.length} puzzles in this edition.`;
+  }
+  showSheet('won', `proof · ${custom ? (custom.press != null ? 'the press, No.' + (custom.press + 1) : 'your level') : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda + pressNote,
     [...(custom?.press != null ? [['print another  ⏎', () => press(), true]]
       : custom ? [['back to editor', openEditor, true]]
       : endOfBook ? [['read the apocrypha  ⏎', next, true], ['open the editor', openEditor]]
@@ -721,7 +729,13 @@ function showSheet(kind, stamp, title, printGrid, html, buttons) {
 const EDITION = /*__EDITION__*/[];
 const EPOCH = Date.UTC(2026, 8, 30);
 const todaysPress = () => { const day = Math.floor((Date.now() - EPOCH) / 864e5); return ((day % EDITION.length) + EDITION.length) % EDITION.length; };
-function press(n = Math.floor(Math.random() * EDITION.length)) {
+function unsolvedPress() {
+  const done = new Set(store.get('pressDone', []));
+  const left = EDITION.map((_, i) => i).filter(i => !done.has(i));
+  const pool = left.length ? left : EDITION.map((_, i) => i);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function press(n = unsolvedPress()) {
   const [map, par] = EDITION[n];
   const today = n === todaysPress();
   custom = {
