@@ -11,8 +11,12 @@
 // (`you=@win=$`), and anything touching the end of a value joins it.
 //
 // Sentences are re-read after every move, so pushing letters rewrites physics.
+//
+// Reading direction is itself a law: while some left-to-right sentence says
+// `read=v`, columns are read top to bottom too, and the board becomes a
+// crossword. (Only rows can switch columns on, so there's no paradox.)
 
-export const KEYS = ['you', 'win', 'stop', 'kill'];
+export const KEYS = ['you', 'win', 'stop', 'kill', 'read'];
 const KEYWORD = new RegExp(`(${KEYS.join('|')})=`, 'g');
 export const DIRS = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] };
 
@@ -28,22 +32,28 @@ export function parse(grid) {
   const rules = Object.fromEntries(KEYS.map(k => [k, new Set()]));
   const text = grid.map(r => new Array(r.length).fill(null)); // null | key name
   const statements = [];
-  grid.forEach((row, r) => {
-    if (!row.includes('=')) return; // no sentence without an equals sign
-    const line = row.join('');
+  // Read one line of cells; `at(i)` maps a position along it to [r, c].
+  const read = (cells, at, dir) => {
+    if (!cells.includes('=')) return; // no sentence without an equals sign
+    const line = cells.join('');
     for (const run of line.matchAll(/\S+/g)) {
       const keys = [...run[0].matchAll(KEYWORD)];
       keys.forEach((m, i) => {
         const from = m.index + m[0].length;
         const to = i + 1 < keys.length ? keys[i + 1].index : run[0].length;
         if (to <= from) return; // `key=` with nothing after it says nothing
-        const value = run[0].slice(from, to), c = run.index + m.index;
+        const value = run[0].slice(from, to), start = run.index + m.index;
         for (const ch of value) rules[m[1]].add(ch);
-        for (let i = c; i < run.index + to; i++) text[r][i] = m[1];
-        statements.push({ r, c, len: run.index + to - c, key: m[1], value });
+        for (let i = start; i < run.index + to; i++) { const [r, c] = at(i); text[r][c] ??= m[1]; }
+        const [r, c] = at(start);
+        statements.push({ r, c, len: run.index + to - start, key: m[1], value, dir });
       });
     }
-  });
+  };
+  grid.forEach((row, r) => read(row, i => [r, i], 'h'));
+  if (rules.read.has('v') && grid.length) {
+    for (let c = 0; c < grid[0].length; c++) read(grid.map(row => row[c]), i => [i, c], 'v');
+  }
   return { rules, text, statements };
 }
 
@@ -111,34 +121,52 @@ export function step(grid, dir, ids = null, parsed = parse(grid)) {
   return { grid: ch, won, moved, events, ids: id, parsed: after };
 }
 
-// Breadth-first solver, used to verify levels and find par.
+// Breadth-first solver, used to verify levels and find par. States live in
+// one array in BFS order, so each layer is a contiguous range and a parent
+// pointer is just an index.
 export function solve(lines, { maxStates = 400_000 } = {}) {
-  const startKey = key(toGrid(lines));
-  const seen = new Map([[startKey, null]]);
-  const parses = new Map();
-  let frontier = [startKey];
-  while (frontier.length && seen.size < maxStates) {
-    const nextFrontier = [];
-    for (const k of frontier) {
-      const g = k.split('\n').map(r => r.split(''));
-      const parsed = parses.get(k) ?? parse(g);
-      parses.delete(k);
-      for (const d of Object.keys(DIRS)) {
-        const res = step(g, d, null, parsed);
-        if (res.won) {
-          const path = [d];
-          for (let p = k; seen.get(p); p = seen.get(p).from) path.unshift(seen.get(p).dir);
-          return { solved: true, moves: path, explored: seen.size };
-        }
+  const dirs = Object.keys(DIRS);
+  const states = [key(toGrid(lines))];
+  const index = new Map([[states[0], 0]]);
+  let parent = new Int32Array(1024), via = new Uint8Array(1024);
+  parent[0] = -1;
+  const path = i => { const out = []; for (; parent[i] >= 0; i = parent[i]) out.unshift(dirs[via[i]]); return out; };
+  let lo = 0;
+  while (lo < states.length && states.length < maxStates) {
+    const hi = states.length;
+    for (let i = lo; i < hi; i++) {
+      const g = states[i].split('\n').map(r => r.split(''));
+      const parsed = parse(g);
+      for (let d = 0; d < 4; d++) {
+        const res = step(g, dirs[d], null, parsed);
+        if (res.won) return { solved: true, moves: [...path(i), dirs[d]], explored: states.length };
         if (!res.moved) continue;
         const nk = key(res.grid);
-        if (seen.has(nk)) continue;
-        seen.set(nk, { from: k, dir: d });
-        parses.set(nk, res.parsed);
-        nextFrontier.push(nk);
+        if (index.has(nk)) continue;
+        if (!movers(res.grid, res.parsed).length) continue; // nobody is you: a dead end
+        const n = states.length;
+        if (n === parent.length) {
+          const p2 = new Int32Array(n * 2); p2.set(parent); parent = p2;
+          const v2 = new Uint8Array(n * 2); v2.set(via); via = v2;
+        }
+        index.set(nk, n); states.push(nk); parent[n] = i; via[n] = d;
       }
     }
-    frontier = nextFrontier;
+    lo = hi;
   }
-  return { solved: false, explored: seen.size, exhausted: frontier.length === 0 };
+  return { solved: false, explored: states.length, exhausted: lo >= states.length };
+}
+
+// Play a move string like 'LLDUR' (or an array of directions). Used to verify
+// hand-written solutions for levels too deep for the solver to exhaust.
+export function replay(lines, moves) {
+  const M = { U: 'up', D: 'down', L: 'left', R: 'right' };
+  const seq = typeof moves === 'string' ? [...moves.replace(/\s/g, '')].map(ch => M[ch]) : moves;
+  let g = toGrid(lines);
+  for (let i = 0; i < seq.length; i++) {
+    const res = step(g, seq[i]);
+    if (res.won) return { won: true, at: i + 1 };
+    g = res.grid;
+  }
+  return { won: false, grid: g };
 }

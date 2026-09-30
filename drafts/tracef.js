@@ -1,6 +1,6 @@
 // node trace.js n  — print every frame of the solver's solution, side by side.
-import { solve, step, toGrid, toLines } from './engine.js';
-import { LEVELS } from './levels.js';
+import { solve, step, toGrid, toLines } from '../engine.js';
+import { LEVELS } from './finale.js';
 const lvl = LEVELS[Number(process.argv[2])];
 const res = solve(lvl.map, { maxStates: 4_000_000 });
 if (!res.solved) { console.log('no solution'); process.exit(1); }

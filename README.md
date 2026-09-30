@@ -19,6 +19,7 @@ you=@   win=$        push the letters around and you rewrite the physics.
 - A sentence starts at its key, so junk *before* the key is ignored. Its value runs to the next space or the next `key=`, so **anything touching the end of a sentence joins it**.
 - Characters inside a sentence are *type*: inert, pushable, nothing else. Everything else is an *object* and takes on meaning from the sentences.
 - `stop` things can't be pushed, and can't move even if they are also `you`.
+- **Book II** adds a fifth key, `read`. While any *row* says `read=v`, columns are read top to bottom as well, and the board becomes a crossword: one letter can serve two sentences, and whatever touches the *bottom* of a column joins it. Reading is a law like any other, so it can be broken and restored. (Only rows can turn columns on, so a vertical `read=v` can't sustain itself.)
 - Walk into a `win` object, or be `you` and `win` at once, and you win. Walk into `kill` and that body is gone. If no loose character answers to `you` any more, you are no one (press `z`).
 
 ## What's in the box
@@ -27,7 +28,8 @@ you=@   win=$        push the letters around and you rewrite the physics.
 |---|---|
 | `pushdown.html` | **the game.** Built artifact, committed so it's ready to play. |
 | `engine.js` | parser, step function and BFS solver (~150 lines, no dependencies) |
-| `levels.js` | 12 designed levels + 3 *apocrypha*, as plain strings |
+| `levels.js` | 13 levels in Book I, 6 in Book II (columns), 3 *apocrypha*, as plain strings |
+| `par.js` | par = the solver's proven optimum, or a hand-written solution verified by replay (shown as "par ≤ n") |
 | `src/game.html` | the page template: letterpress art, sound, editor |
 | `build.js` | solves every level, records its par, inlines everything into `pushdown.html` |
 | `check.js` | `node check.js [n] [-v]`: solve levels, print par and state counts |
@@ -61,6 +63,12 @@ Some things the grammar implies that I didn't plan:
 - You can never push a character *leftward* into the end of a sentence without joining it yourself, because you end up touching the end too.
 - Pushing the last letter out of a sentence vertically puts *you* in its place. You become the new last letter.
 - Breaking a sentence frees its letters as live objects. Break a second `you=@` and its `@` wakes up as a new body, wherever it was ("spare body").
+
+## Book II and the limits of brute force
+
+Columns multiply the state space. The Book II finale, *while nobody reads*, asks you to switch reading off (so the river stops being deadly), rearrange the river into a door while nobody's reading, then switch reading back on (so the goal starts counting as a win) and walk through. Its 25-move solution is too deep for breadth-first search: the solver gives up after millions of positions. So a level may carry a hand-written `solution`. The build replays it to prove the level is winnable, and the game shows its par as **≤ 25**. If you beat it, the proof sheet tells you that you found something the solver never did.
+
+The solver itself was rewritten along the way. States are kept in one array in BFS order, so each layer is a contiguous range and parent pointers are typed-array indices. Positions where nobody is `you` are pruned. It now handles millions of states in a few GB.
 
 ## Apocrypha: levels nobody designed
 

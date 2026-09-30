@@ -10,7 +10,7 @@
 :root {
   --paper: #ece2cc; --paper-2: #e2d6bb; --ink: #221e1a; --ink-soft: #5d5346;
   --iron: #24211e; --iron-2: #1a1816; --steel: #4b4741;
-  --you: #a86700; --win: #1f7f55; --stop: #2f48a8; --kill: #c7341f;
+  --you: #a86700; --win: #1f7f55; --stop: #2f48a8; --kill: #c7341f; --read: #6d3a91;
   --brass-hi: #f6dd8e; --brass: #d3a441; --brass-lo: #8e6620;
   --wood-hi: #efd3a0; --wood: #ddb479; --wood-lo: #a97a45;
   --serif: 'Alfa Slab One', 'Rockwell', 'Georgia', serif;
@@ -123,6 +123,8 @@ main { width: min(1040px, 100%); display: grid; grid-template-columns: minmax(0,
 .blk.t-win  { color: var(--win); }
 .blk.t-stop { color: var(--stop); }
 .blk.t-kill { color: var(--kill); }
+.blk.t-read { color: var(--read); }
+.stick.v::after { writing-mode: vertical-rl; left: auto; right: 0; bottom: 8px; }
 .blk.t > span { text-shadow: 0 1px 0 #fff5; }
 /* loose objects get their material from the laws */
 .blk.inert { color: #6f6253; filter: saturate(.6) brightness(.93); }
@@ -191,7 +193,7 @@ aside { display: flex; flex-direction: column; gap: 18px; }
 .laws .g i { font-style: normal; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 3px; font-size: 14px;
   background: linear-gradient(155deg, var(--wood-hi), var(--wood)); box-shadow: 0 2px 0 #6b4a25; }
 .laws .none { font-style: italic; color: var(--ink-soft); }
-.k-you { color: var(--you); } .k-win { color: var(--win); } .k-stop { color: var(--stop); } .k-kill { color: var(--kill); }
+.k-you { color: var(--you); } .k-win { color: var(--win); } .k-stop { color: var(--stop); } .k-kill { color: var(--kill); } .k-read { color: var(--read); }
 .small { font-size: 13.5px; line-height: 1.55; margin: 0; }
 .small code { font-weight: 700; }
 .keys { font-size: 13px; line-height: 2; }
@@ -270,6 +272,9 @@ footer { font-size: 12.5px; color: var(--ink-soft); font-style: italic; }
         A sentence is <code>key=value</code>, read left to right.
         The keys are <code class="k-you">you</code>, <code class="k-win">win</code>,
         <code class="k-stop">stop</code> and <code class="k-kill">kill</code>.
+        <span id="readNote" hidden><br><br>Book II adds <code class="k-read">read</code>: while any row says
+        <code class="k-read">read=v</code>, columns are read top to bottom as well, and whatever touches the
+        <b>bottom</b> of a column joins it.</span>
         Every character in the value takes on that meaning.<br><br>
         A sentence begins at its key, and <b>anything touching its end joins the value.</b>
         Type locked in a sentence is only type: it can be pushed, and nothing more.
@@ -309,6 +314,8 @@ const current = () => custom ?? LEVELS[idx];
 const DESIGNED = LEVELS.some(l => l.mined) ? LEVELS.findIndex(l => l.mined) : LEVELS.length;
 const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
 const label = i => (LEVELS[i].mined ? 'Apocrypha ' + ROMAN[i - DESIGNED] : 'No.' + (i + 1));
+const bookOf = i => LEVELS[i].book ?? 1;
+const BOOKS = { 2: 'Book II · columns' };
 
 // ---------------- sound: a small synthesized print shop ----------------
 const sound = {
@@ -361,6 +368,7 @@ function load() {
   prevMeanings = new Set(initial.map(meaning));
   $('title').innerHTML = custom ? '' : `<small>${label(idx)}</small>`;
   $('title').append(lvl.title);
+  $('readNote').hidden = !lvl.map.some(row => row.includes('read='));
   $('hint').textContent = lvl.hint || '';
   hideSheet();
   $('board').innerHTML = '';
@@ -372,12 +380,14 @@ function renderDrawer() {
   const bar = $('drawer');
   bar.innerHTML = '';
   LEVELS.forEach((l, i) => {
-    if (i === DESIGNED) { const sep = document.createElement('span'); sep.className = 'sep'; sep.title = 'apocrypha'; bar.append(sep); }
+    if (i === DESIGNED || (i > 0 && !l.mined && bookOf(i) !== bookOf(i - 1))) {
+      const sep = document.createElement('span'); sep.className = 'sep'; sep.title = l.mined ? 'apocrypha' : BOOKS[bookOf(i)]; bar.append(sep);
+    }
     const b = document.createElement('button');
     b.textContent = l.mined ? ROMAN[i - DESIGNED] : i + 1; b.title = l.title + (l.mined ? ' (apocrypha)' : '');
     if (l.mined) b.classList.add('mined');
     if (done.has(i)) b.classList.add('done');
-    if (best[i] != null && best[i] <= PAR[i]) { b.classList.add('par'); b.title += ' · solved at par'; }
+    if (best[i] != null && best[i] <= Math.abs(PAR[i])) { b.classList.add('par'); b.title += ' · solved at par'; }
     if (!custom && i === idx) b.classList.add('cur');
     b.onclick = () => { custom = null; idx = i; store.set('level', idx); closeEditor(); load(); };
     bar.append(b);
@@ -391,7 +401,8 @@ function renderDrawer() {
 // ---------------- rendering ----------------
 const blocks = new Map();   // id -> element
 const sticks = new Map();   // statement key -> element
-const sKey = s => `${s.r}:${s.c}:${s.len}:${s.key}=${s.value}`;
+const sKey = s => `${s.dir}:${s.r}:${s.c}:${s.len}:${s.key}=${s.value}`;
+const cellsOf = s => Array.from({ length: s.len }, (_, i) => (s.dir === 'v' ? [s.r + i, s.c] : [s.r, s.c + i]));
 const meaning = s => `${s.key}=${s.value}`;
 
 function layout() {
@@ -452,11 +463,13 @@ function render() {
     const k = sKey(s); now.add(k);
     let el = sticks.get(k);
     if (!el) {
-      el = document.createElement('div'); el.className = 'stick'; el.dataset.key = s.key;
+      el = document.createElement('div'); el.className = 'stick' + (s.dir === 'v' ? ' v' : ''); el.dataset.key = s.key;
       board.append(el); sticks.set(k, el);
       if (!prevStatements.has(k)) { el.classList.add('fresh'); }
     }
-    Object.assign(el.style, { left: s.c * cs - 3 + 'px', top: s.r * cs + cs * .38 + 'px', width: s.len * cs + 6 + 'px', height: cs * .62 + 8 + 'px' });
+    Object.assign(el.style, s.dir === 'v'
+      ? { left: s.c * cs + cs * .38 + 'px', top: s.r * cs - 3 + 'px', width: cs * .62 + 8 + 'px', height: s.len * cs + 6 + 'px' }
+      : { left: s.c * cs - 3 + 'px', top: s.r * cs + cs * .38 + 'px', width: s.len * cs + 6 + 'px', height: cs * .62 + 8 + 'px' });
   }
   for (const [k, el] of sticks) if (!now.has(k)) { el.remove(); sticks.delete(k); }
 
@@ -464,8 +477,8 @@ function render() {
   const after = new Set(parsed.statements.map(meaning));
   const fresh = parsed.statements.filter(s => !prevMeanings.has(meaning(s)));
   const formed = fresh[0];
-  for (const s of fresh) for (let c = s.c; c < s.c + s.len; c++) {
-    const el = blocks.get(ids[s.r][c]);
+  for (const s of fresh) for (const [r, c] of cellsOf(s)) {
+    const el = blocks.get(ids[r][c]);
     if (el) { el.classList.remove('inked'); void el.offsetWidth; el.classList.add('inked'); }
   }
   const broke = [...prevMeanings].some(m => !after.has(m));
@@ -474,14 +487,16 @@ function render() {
   renderLaws(parsed);
   const par = custom ? null : PAR[idx];
   const b = custom ? null : best[idx];
-  $('counter').innerHTML = `<b>${moves}</b> moves` + (par ? ` · par ${par}` : '') + (b != null ? ` · best ${b}` : '');
+  const parText = par == null ? '' : par > 0 ? ` · par ${par}` : ` · <span title="the designer's solution; the solver couldn't prove a shorter one doesn't exist">par ≤${-par}</span>`;
+  $('counter').innerHTML = `<b>${moves}</b> moves` + parText + (b != null ? ` · best ${b}` : '');
   return { formed, broke };
 }
 
 function renderLaws(parsed) {
   const ul = $('laws');
   ul.innerHTML = '';
-  const words = { you: 'are you', win: 'win', stop: 'are solid', kill: 'kill' };
+  const words = { you: 'are you', win: 'win', stop: 'are solid', kill: 'kill',
+    read: parsed.rules.read.has('v') ? 'columns are read' : 'means nothing yet' };
   const now = Object.fromEntries(KEYS.map(k => [k, [...parsed.rules[k]].join('')]));
   const first = !Object.keys(prevLaws).length;
   for (const k of KEYS) {
@@ -554,16 +569,21 @@ function win() {
   const par = custom ? null : PAR[idx];
   const last = !custom && idx === LEVELS.length - 1;
   const endOfBook = !custom && idx === DESIGNED - 1 && DESIGNED < LEVELS.length;
-  const note = par == null ? `set in ${moves} moves.` :
-    moves <= par ? `set in ${moves} moves: par. the solver couldn't beat you.` :
-    `set in ${moves} moves. the solver found a way in ${par}.`;
-  const coda = endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
+  const endOfVolume = !custom && !endOfBook && idx + 1 < DESIGNED && bookOf(idx + 1) !== bookOf(idx);
+  const note = par == null ? `set in ${moves} moves.`
+    : par < 0 ? (moves < -par ? `set in ${moves} moves: <b>shorter than any known solution.</b> the solver never found this one. you should tell someone.`
+      : moves === -par ? `set in ${moves} moves: the same as the designer. the solver couldn't prove anything shorter exists.`
+      : `set in ${moves} moves. the designer's solution takes ${-par}, and nobody has proven that is the shortest.`)
+    : moves <= par ? `set in ${moves} moves: par. the solver couldn't beat you.`
+    : `set in ${moves} moves. the solver found a way in ${par}.`;
+  const coda = endOfVolume ? '<br><br>that is the end of book one. in book two, the words learn to stand up.' : endOfBook ? '<br><br>that is the whole book. there are also a few <i>apocrypha</i>: levels nobody designed, dug up by a random search and proven solvable by the solver. no one knows their intended solutions, because there aren\'t any.'
     : last ? '<br><br>you have read everything, canon and apocrypha. now open the editor and write your own laws.' : '';
   sound.play('press');
-  showSheet('won', `proof · ${custom ? 'your level' : label(idx)}`, endOfBook || last ? 'the end' : 'solved', grid, note + coda,
+  showSheet('won', `proof · ${custom ? 'your level' : label(idx)}`, endOfVolume ? 'book one ends' : endOfBook || last ? 'the end' : 'solved', grid, note + coda,
     [...(custom ? [['back to editor', openEditor, true]]
       : endOfBook ? [['read the apocrypha  ⏎', next, true], ['open the editor', openEditor]]
-      : last ? [['open the editor', openEditor, true]] : [['next  ⏎', next, true]]),
+      : last ? [['open the editor', openEditor, true]]
+      : endOfVolume ? [['begin book two  ⏎', next, true]] : [['next  ⏎', next, true]]),
      ['replay', load]]);
   renderDrawer();
 }

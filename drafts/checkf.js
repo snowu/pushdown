@@ -1,6 +1,6 @@
 // node check.js [n]  — solve every level (or just level n) and report par.
 import { solve, step, toGrid, toLines } from '../engine.js';
-import { LEVELS } from './candidates.js';
+import { LEVELS } from './finale.js';
 
 const nums = process.argv.slice(2).filter(a => /^\d+$/.test(a)).map(Number);
 const only = nums.length ? nums[0] : null;

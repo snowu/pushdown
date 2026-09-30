@@ -1,13 +1,13 @@
 // node build.js — verify every level with the solver, then inline everything
 // into a single self-contained pushdown.html you can just double-click.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { solve } from './engine.js';
 import { LEVELS } from './levels.js';
+import { par } from './par.js';
 
 const pars = LEVELS.map((lvl, i) => {
-  const res = solve(lvl.map);
-  if (!res.solved) throw new Error(`level ${i} "${lvl.title}" is not solvable`);
-  return res.moves.length;
+  const res = par(lvl);
+  if (!res.par) throw new Error(`level ${i} "${lvl.title}" is not solvable`);
+  return res.proven ? res.par : -res.par; // negative: an unproven upper bound
 });
 
 const fonts = JSON.parse(readFileSync('fonts/fonts.json', 'utf8')).map(([family, style, weight, file]) =>
@@ -21,4 +21,4 @@ const html = readFileSync('src/game.html', 'utf8')
   .replace('/*__LEVELS__*/', () => strip(readFileSync('levels.js', 'utf8')))
   .replace('/*__PARS__*/[]', JSON.stringify(pars));
 writeFileSync('pushdown.html', html);
-console.log(`built pushdown.html — ${LEVELS.length} levels, pars ${pars.join(' ')}`);
+console.log(`built pushdown.html — ${LEVELS.length} levels, pars ${pars.map(p => (p < 0 ? '≤' + -p : p)).join(' ')}`);

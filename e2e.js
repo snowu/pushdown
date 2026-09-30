@@ -3,7 +3,7 @@
 // Needs puppeteer-core (PUPPETEER_DIR) and a chromium binary (CHROME).
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
-import { solve } from './engine.js';
+import { par } from './par.js';
 import { LEVELS } from './levels.js';
 
 const require = createRequire(process.env.PUPPETEER_DIR ? process.env.PUPPETEER_DIR + '/' : import.meta.url);
@@ -19,11 +19,13 @@ for (let i = 0; i < LEVELS.length; i++) {
   await page.goto(url);
   await page.evaluate(i => { localStorage.clear(); localStorage.setItem('pushdown:level', i); localStorage.setItem('pushdown:sound', 'false'); }, i);
   await page.reload({ waitUntil: 'load' });
-  const { moves } = solve(LEVELS[i].map);
+  const r = par(LEVELS[i]);
+  const M = { U: 'up', D: 'down', L: 'left', R: 'right' };
+  const moves = r.moves ?? [...LEVELS[i].solution.replace(/\s/g, '')].map(ch => M[ch]);
   for (const m of moves) await page.keyboard.press(keys[m]);
   await page.waitForFunction(() => document.getElementById('sheet').classList.contains('show'), { timeout: 3000 }).catch(() => {});
   const title = await page.$eval('#sheetTitle', el => el.textContent);
-  const ok = /solved|the end/.test(title);
+  const ok = /solved|the end|book one ends/.test(title);
   if (!ok) failed++;
   console.log(`${ok ? 'ok  ' : 'FAIL'} ${String(i + 1).padStart(2)} ${LEVELS[i].title.padEnd(20)} ${moves.length} moves → "${title}"`);
 }
