@@ -234,6 +234,9 @@ kbd { font: inherit; font-weight: 700; border: 1.5px solid var(--ink); border-ra
   background: var(--noise), #f4ecda; color: var(--ink); padding: 8px 14px; font-size: 14px; max-width: 90%;
   box-shadow: 0 6px 18px #000a; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; text-align: center;
 }
+.news { margin: 10px 0 0; min-height: 1.4em; font-size: 15px; color: var(--ink-soft); opacity: 0; transition: opacity .25s; }
+.news.show { opacity: 1; }
+.news i { font-style: normal; font-family: var(--serif); padding: 0 2px; }
 .slip.show { opacity: 1; transform: translate(-50%, 0) rotate(-.5deg); }
 .slip b { color: var(--kill); }
 .nudge {
@@ -252,7 +255,7 @@ footer { font-size: 12.5px; color: var(--ink-soft); font-style: italic; }
 
 <header>
   <div class="mast">push<em>down</em></div>
-  <div class="tag">a typesetting puzzle. <b>the level is the program.</b></div>
+  <div class="tag">the sentences on the board are the rules. <b>push the letters to rewrite them.</b></div>
   <nav class="drawer" id="drawer"></nav>
 </header>
 
@@ -267,6 +270,7 @@ footer { font-size: 12.5px; color: var(--ink-soft); font-style: italic; }
       <div class="board" id="board"></div>
       <div class="slip" id="slip"></div>
     </div>
+    <p class="news" id="news" aria-live="polite"></p>
     <div class="veil" id="veil"></div>
     <div class="sheet" id="sheet">
       <div class="stamp" id="stamp"></div>
@@ -293,21 +297,24 @@ footer { font-size: 12.5px; color: var(--ink-soft); font-style: italic; }
 
   <aside>
     <div class="card">
-      <h4>Laws in effect</h4>
+      <h4>Rules right now</h4>
       <ul class="laws" id="laws"></ul>
     </div>
     <div class="card">
-      <h4>Grammar</h4>
+      <h4>How it works</h4>
       <p class="small">
-        A sentence is <code>key=value</code>, read left to right.
-        The keys are <code class="k-you">you</code>, <code class="k-win">win</code>,
-        <code class="k-stop">stop</code> and <code class="k-kill">kill</code>.
-        <span id="readNote" hidden><br><br>Book II adds <code class="k-read">read</code>: while any row says
-        <code class="k-read">read=v</code>, columns are read top to bottom as well, and whatever touches the
+        Every sentence on the board is a rule:<br>
+        <code class="k-you">you=@</code> you are the @<br>
+        <code class="k-win">win=$</code> touch a $ to win<br>
+        <code class="k-stop">stop=#</code> # blocks the way<br>
+        <code class="k-kill">kill=~</code> touching ~ kills you<br><br>
+        The letters are blocks you can push.
+        <b>Break a sentence and its rule stops. Spell one and it starts.</b><br><br>
+        Anything pushed against the end of a sentence joins it:
+        <code class="k-win">win=$</code> + <code>#</code> is <code class="k-win">win=$#</code>.
+        <span id="readNote" hidden><br><br>Book II adds <code class="k-read">read=v</code>: while it holds,
+        columns are read top to bottom too, like a crossword, and anything touching the
         <b>bottom</b> of a column joins it.</span>
-        Every character in the value takes on that meaning.<br><br>
-        A sentence begins at its key, and <b>anything touching its end joins the value.</b>
-        Type locked in a sentence is only type: it can be pushed, and nothing more.
       </p>
     </div>
     <div class="card keys">
@@ -502,7 +509,7 @@ function replay(lines, moves) {
 const LEVELS = [
   {
     title: 'hello, world',
-    hint: 'arrows or wasd to move · z undo · r restart',
+    hint: 'you are the @, because the board says you=@. walk into the $ to win. (arrows or wasd · z undo · r restart)',
     map: [
       '             ',
       '  @       $  ',
@@ -512,7 +519,7 @@ const LEVELS = [
   },
   {
     title: 'fill in the blank',
-    hint: 'a rule is just text. text can be pushed.',
+    hint: 'win= has nothing after it, so nothing wins. push a $ onto its end to finish the rule.',
     map: [
       '         ',
       ' win=  $ ',
@@ -523,7 +530,7 @@ const LEVELS = [
   },
   {
     title: 'one letter',
-    hint: 'words are made of letters. letters can be moved.',
+    hint: 'there is no win rule here, but the letters for one are lying around. spell it.',
     map: [
       '#########',
       '#       #',
@@ -537,7 +544,7 @@ const LEVELS = [
   },
   {
     title: 'breakout',
-    hint: 'walls are only walls because a sentence says so.',
+    hint: 'the # walls are solid only because stop=# says so, and that sentence is part of the wall. break it.',
     map: [
       '#########         ',
       '#       #         ',
@@ -552,7 +559,7 @@ const LEVELS = [
   },
   {
     title: 'glue',
-    hint: 'whatever touches the end of a sentence joins it.',
+    hint: 'anything pushed against the end of a sentence joins it. win=$ plus # is win=$#.',
     map: [
       '             ',
       '  win=  $ ## ',
@@ -909,7 +916,7 @@ function load() {
   if (custom?.press == null && location.hash.startsWith('#press=')) window.history.replaceState(null, '', location.pathname);
   grid = toGrid(lvl.map);
   ids = grid.map(row => row.map(ch => (ch === ' ' ? null : nextId++)));
-  history = []; moves = 0; over = false; prevLaws = {}; nudges = 0; clearAdvice();
+  history = []; moves = 0; over = false; prevLaws = {}; nudges = 0; clearAdvice(); clearNews();
   const initial = parse(grid).statements;
   prevStatements = new Set(initial.map(sKey));
   prevMeanings = new Set(initial.map(meaning));
@@ -1045,13 +1052,29 @@ function render() {
   const broke = [...prevMeanings].some(m => !after.has(m));
   prevStatements = now; prevMeanings = after;
 
-  renderLaws(parsed);
+  const changes = renderLaws(parsed);
   const par = custom ? custom.par ?? null : PAR[idx];
   const b = custom ? null : best[idx];
   const parText = par == null ? '' : par > 0 ? ` · par ${par}` : ` · <span title="the designer's solution; the solver couldn't prove a shorter one doesn't exist">par ≤${-par}</span>`;
   $('counter').innerHTML = `<b>${moves}</b> moves` + parText + (b != null ? ` · best ${b}` : '');
-  return { formed, broke };
+  return { formed, broke, changes };
 }
+
+// Plain-language narration of a rule change, e.g. "# is no longer solid".
+const NEWS = { you: 'you', win: 'the goal', stop: 'solid', kill: 'deadly' };
+function newsLine(k, chars, gained) {
+  const glyphs = chars.map(ch => `<i class="k-${k}">${ch === '<' ? '&lt;' : ch === '&' ? '&amp;' : ch}</i>`).join(' ');
+  if (k === 'read') return chars.includes('v') ? (gained ? 'columns are now read top to bottom too' : 'columns are no longer read') : null;
+  return `${glyphs} ${gained ? 'is now' : 'is no longer'} <b class="k-${k}">${NEWS[k]}</b>`;
+}
+let newsTimer = 0;
+function news(lines) {
+  const el = $('news'); lines = (lines || []).filter(Boolean);
+  if (!lines.length) return;
+  el.innerHTML = lines.join(' · '); el.classList.add('show');
+  clearTimeout(newsTimer); newsTimer = setTimeout(() => el.classList.remove('show'), 6000);
+}
+function clearNews() { clearTimeout(newsTimer); $('news').classList.remove('show'); }
 
 function renderLaws(parsed) {
   const ul = $('laws');
@@ -1060,6 +1083,13 @@ function renderLaws(parsed) {
     read: parsed.rules.read.has('v') ? 'columns are read' : 'means nothing yet' };
   const now = Object.fromEntries(KEYS.map(k => [k, [...parsed.rules[k]].join('')]));
   const first = !Object.keys(prevLaws).length;
+  const changes = [];
+  if (!first) for (const k of KEYS) {
+    const was = prevLaws[k] || '', is = now[k];
+    const gained = [...is].filter(ch => !was.includes(ch)), lost = [...was].filter(ch => !is.includes(ch));
+    if (gained.length) changes.push(newsLine(k, gained, true));
+    if (lost.length) changes.push(newsLine(k, lost, false));
+  }
   for (const k of KEYS) {
     if (!parsed.rules[k].size) {
       if (prevLaws[k]) { // a law that just died: show it struck through, briefly
@@ -1077,8 +1107,9 @@ function renderLaws(parsed) {
     const w = document.createElement('span'); w.className = 'k-' + k; w.textContent = words[k];
     li.append(g, w); ul.append(li);
   }
-  if (!ul.children.length) ul.innerHTML = '<li class="none">no laws. nothing matters.</li>';
+  if (!ul.children.length) ul.innerHTML = '<li class="none">no rules. nothing matters.</li>';
   prevLaws = now;
+  return changes;
 }
 
 // ---------------- the compositor ----------------
@@ -1148,7 +1179,8 @@ function move(dir) {
   const pushed = countMoved(grid, ids, res.ids) > youCells(grid).length;
   history.push({ grid, ids });
   grid = res.grid; ids = res.ids; moves++;
-  const { formed, broke } = render();
+  const { formed, broke, changes } = render();
+  news(changes);
   if (formed) sound.play('bell', formed.key); else if (broke) sound.play('break');
   sound.play(pushed ? 'push' : 'step');
   if (res.won) return setTimeout(win, 160);
@@ -1169,7 +1201,7 @@ function countMoved(g, a, b) {
 
 function undo() {
   if (!history.length) return;
-  ({ grid, ids } = history.pop()); moves--; over = false; clearAdvice();
+  ({ grid, ids } = history.pop()); moves--; over = false; clearAdvice(); clearNews();
   hideSheet();
   sound.play('undo');
   render();

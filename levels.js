@@ -5,7 +5,7 @@
 export const LEVELS = [
   {
     title: 'hello, world',
-    hint: 'arrows or wasd to move · z undo · r restart',
+    hint: 'you are the @, because the board says you=@. walk into the $ to win. (arrows or wasd · z undo · r restart)',
     map: [
       '             ',
       '  @       $  ',
@@ -15,7 +15,7 @@ export const LEVELS = [
   },
   {
     title: 'fill in the blank',
-    hint: 'a rule is just text. text can be pushed.',
+    hint: 'win= has nothing after it, so nothing wins. push a $ onto its end to finish the rule.',
     map: [
       '         ',
       ' win=  $ ',
@@ -26,7 +26,7 @@ export const LEVELS = [
   },
   {
     title: 'one letter',
-    hint: 'words are made of letters. letters can be moved.',
+    hint: 'there is no win rule here, but the letters for one are lying around. spell it.',
     map: [
       '#########',
       '#       #',
@@ -40,7 +40,7 @@ export const LEVELS = [
   },
   {
     title: 'breakout',
-    hint: 'walls are only walls because a sentence says so.',
+    hint: 'the # walls are solid only because stop=# says so, and that sentence is part of the wall. break it.',
     map: [
       '#########         ',
       '#       #         ',
@@ -55,7 +55,7 @@ export const LEVELS = [
   },
   {
     title: 'glue',
-    hint: 'whatever touches the end of a sentence joins it.',
+    hint: 'anything pushed against the end of a sentence joins it. win=$ plus # is win=$#.',
     map: [
       '             ',
       '  win=  $ ## ',
