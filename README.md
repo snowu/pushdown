@@ -6,7 +6,7 @@
 
 ![pushdown](docs/screenshot.png)
 
-Open `pushdown.html` in a browser. It's one self-contained file with fonts, engine and levels inlined, and it works offline.
+**Play it at https://snowu.github.io/pushdown/**, or open `pushdown.html` in a browser. It's one self-contained file with fonts, engine and levels inlined, and it works offline.
 
 ```
   @       $          the board is plain text.
