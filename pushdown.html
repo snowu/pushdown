@@ -755,6 +755,31 @@ const LEVELS = [
     ],
   },
   {
+    title: 'crossroads',
+    book: 2,
+    hint: 'a letter at a crossing serves two sentences. a sentence can travel whole.',
+    map: [
+      '   #k# ',
+      '   #i# ',
+      '   #l# ',
+      '   #l# ',
+      ' you=@ ',
+      '   #~# ',
+      '   ### ',
+      '@      ',
+      '~~~~~~~',
+      '~  w  ~',
+      '~  i  ~',
+      '~  n $~',
+      '~  =  ~',
+      '~  $  ~',
+      '~     ~',
+      '~~~~~~~',
+      'stop=# ',
+      'read=v ',
+    ],
+  },
+  {
     title: 'while nobody reads',
     book: 2,
     hint: '',
@@ -819,7 +844,7 @@ const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem('pushdown:' + k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem('pushdown:' + k, JSON.stringify(v)); } catch {} },
 };
-const PAR = [8,13,11,13,13,10,12,13,5,9,15,13,12,6,19,11,14,14,-25,15,19,23];
+const PAR = [8,13,11,13,13,10,12,13,5,9,15,13,12,6,19,11,14,14,11,-25,15,19,23];
 const done = new Set(store.get('done', []));
 const best = store.get('best', {});   // level index -> fewest moves
 let prevLaws = {};                    // key -> 'chars' last frame, for the laws panel

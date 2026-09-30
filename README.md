@@ -30,7 +30,7 @@ you=@   win=$        push the letters around and you rewrite the physics.
 |---|---|
 | `pushdown.html` | **the game.** Built artifact, committed so it's ready to play. |
 | `engine.js` | parser, step function and BFS solver (~150 lines, no dependencies) |
-| `levels.js` | 13 levels in Book I, 6 in Book II (columns), 3 *apocrypha*, as plain strings |
+| `levels.js` | 13 levels in Book I, 7 in Book II (columns), 3 *apocrypha*, as plain strings |
 | `par.js` | par = the solver's proven optimum, or a hand-written solution verified by replay (shown as "par ≤ n") |
 | `src/game.html` | the page template: letterpress art, sound, editor |
 | `build.js` | solves every level, records its par, inlines everything into `pushdown.html` |
