@@ -124,6 +124,9 @@ main { width: min(1040px, 100%); display: grid; grid-template-columns: minmax(0,
 }
 .blk > span { display: block; transform-origin: 50% 80%; }
 .blk.gone { opacity: 0; filter: blur(2px); }
+.blk.setting { animation: setting .38s cubic-bezier(.2,.9,.3,1.25) backwards; }
+@keyframes setting { from { translate: 0 -34px; opacity: 0; } }
+.stick.setting { animation: setting .38s ease-out backwards; }
 /* text inside a live sentence: inked by what it means */
 .blk.t { box-shadow: inset 0 1px 0 #fff8, inset 0 -3px 0 #0002, 0 2px 0 #6b4a25, 0 3px 4px #0006; }
 .blk.t-you  { color: var(--you); }
@@ -822,6 +825,7 @@ let idx = Math.min(store.get('level', 0), LEVELS.length - 1);
 let custom = null;                 // a level from the editor or a share link
 let grid, ids, history, moves, over = false;
 let nextId = 1, cs = 40;
+let settingIn = false;            // true for the first render of a level: type drops onto the bed
 let prevStatements = new Set();  // stick positions last frame
 let prevMeanings = new Set();    // `key=value` sentences last frame
 
@@ -888,7 +892,10 @@ function load() {
   hideSheet();
   $('board').innerHTML = '';
   blocks.clear(); sticks.clear();
-  renderDrawer(); layout(); render();
+  renderDrawer(); layout();
+  settingIn = true; render(); settingIn = false;
+  // after the drop, the class must go or it would replay on every class change
+  setTimeout(() => document.querySelectorAll('.setting').forEach(el => el.classList.remove('setting')), 900);
 }
 
 function renderDrawer() {
@@ -955,6 +962,7 @@ function render() {
       el.firstChild.textContent = ch;
       sizeBlock(el);
       el.style.transition = 'none';
+      if (settingIn) { el.classList.add('setting'); el.style.animationDelay = (r + c) * 14 + 'ms'; }
       board.append(el); blocks.set(id, el);
       requestAnimationFrame(() => (el.style.transition = ''));
     }
@@ -966,7 +974,7 @@ function render() {
       const p = KEYS.filter(k => parsed.rules[k].has(ch));
       cls += p.length ? p.map(k => ' o-' + k).join('') : ' inert';
     }
-    el.className = cls;
+    el.className = cls + (settingIn || el.classList.contains('setting') ? ' setting' : '');
   }));
   for (const [id, el] of blocks) if (!seen.has(id)) {
     blocks.delete(id); el.classList.add('gone'); setTimeout(() => el.remove(), 300);
@@ -981,6 +989,7 @@ function render() {
       el = document.createElement('div'); el.className = 'stick' + (s.dir === 'v' ? ' v' : ''); el.dataset.key = s.key;
       board.append(el); sticks.set(k, el);
       if (!prevStatements.has(k)) { el.classList.add('fresh'); }
+      if (settingIn) { el.classList.add('setting'); el.style.animationDelay = (s.r + s.c) * 14 + 'ms'; }
     }
     Object.assign(el.style, s.dir === 'v'
       ? { left: s.c * cs + cs * .38 + 'px', top: s.r * cs - 3 + 'px', width: cs * .62 + 8 + 'px', height: s.len * cs + 6 + 'px' }
